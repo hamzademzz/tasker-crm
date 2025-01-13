@@ -114,7 +114,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" enctype="multipart/form-data" action="{% url 'customer_detail' 0 %}">
+                    <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="hidden" id="customer_id" name="customer_id">
                         <div class="mb-3">
@@ -165,8 +165,7 @@
             </div>
         </div>
     </div>
-
-</div>
+    
 
 <!-- JavaScript for Bootstrap Modal and populating modal fields -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -193,8 +192,12 @@
         modal.find('#service').val(service);
         modal.find('#status').val(status);
         modal.find('#assigned_tasker').val(tasker);
+
+        // Update the form action dynamically
+        modal.find('form').attr('action', `/customer/${customerId}/`);
     });
 </script>
+
 
 </body>
 </html>

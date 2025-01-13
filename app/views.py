@@ -45,9 +45,12 @@ def customer_create_view(request):
         return redirect('home')
 
 def customer_detail_view(request, customer_id):
-    customer = get_object_or_404(Customer, id=customer_id)
-
     if request.method == 'POST':
+        try:
+            customer = Customer.objects.get(id=customer_id)
+        except Customer.DoesNotExist:
+            raise Http404("Customer not found.")
+
         customer.name = request.POST.get('name')
         customer.email = request.POST.get('email')
         customer.phone = request.POST.get('phone')
@@ -63,12 +66,10 @@ def customer_detail_view(request, customer_id):
 
         customer.save()
 
-        # Handle file attachments if any
+        # Handle file attachments
         if request.FILES.getlist('attachments'):
             for file in request.FILES.getlist('attachments'):
                 file_instance = File.objects.create(name=file.name, file=file)
                 customer.attachments.add(file_instance)
 
         return redirect('home')
-
-    return render(request, 'app/customer_detail.html', {'customer': customer})
