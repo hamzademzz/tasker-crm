@@ -46,8 +46,10 @@ ROOT_URLCONF = 'tasker_crm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            BASE_DIR / 'templates',  # This should allow global templates if any
+        ],
+        'APP_DIRS': True,  # Ensure this is set to True
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -58,6 +60,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'tasker_crm.wsgi.application'
 

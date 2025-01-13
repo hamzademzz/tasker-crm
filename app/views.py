@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Customer
+from django.http import JsonResponse, Http404
+from .models import Customer, Tasker, File
 from .forms import CustomerForm
 
 def home(request):
@@ -11,10 +12,6 @@ def home(request):
         'taskers': taskers,
         'status_choices': status_choices,
     })
-
-
-from django.shortcuts import render, redirect
-from .models import Customer, Tasker, File
 
 def customer_create_view(request):
     if request.method == 'POST':
@@ -45,13 +42,33 @@ def customer_create_view(request):
                 file_instance = File.objects.create(name=file.name, file=file)
                 customer.attachments.add(file_instance)
 
-        customer.save()  # Save the customer object
-        return redirect('home')  # Redirect to the home page
+        return redirect('home')
 
-    # For GET request
-    taskers = Tasker.objects.all()
-    status_choices = Customer.STATUS_CHOICES
-    return render(request, 'app/home.html', {
-        'taskers': taskers,
-        'status_choices': status_choices,
-    })
+def customer_detail_view(request, customer_id):
+    customer = get_object_or_404(Customer, id=customer_id)
+
+    if request.method == 'POST':
+        customer.name = request.POST.get('name')
+        customer.email = request.POST.get('email')
+        customer.phone = request.POST.get('phone')
+        customer.address = request.POST.get('address')
+        customer.service = request.POST.get('service')
+        customer.status = request.POST.get('status')
+
+        assigned_tasker_id = request.POST.get('assigned_tasker')
+        if assigned_tasker_id:
+            customer.assigned_tasker = Tasker.objects.get(id=assigned_tasker_id)
+        else:
+            customer.assigned_tasker = None
+
+        customer.save()
+
+        # Handle file attachments if any
+        if request.FILES.getlist('attachments'):
+            for file in request.FILES.getlist('attachments'):
+                file_instance = File.objects.create(name=file.name, file=file)
+                customer.attachments.add(file_instance)
+
+        return redirect('home')
+
+    return render(request, 'app/customer_detail.html', {'customer': customer})

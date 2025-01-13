@@ -77,7 +77,6 @@
 <!-- Main Content -->
 <div class="content">
     <h1>Customer List</h1>
-    <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#customerCreateModal">Create New Customer</button>
     
     <table class="table table-striped">
         <thead>
@@ -91,85 +90,111 @@
         </thead>
         <tbody>
             {% for customer in customers %}
-            <tr>
+            <tr data-toggle="modal" data-target="#customerDetailModal" data-id="{{ customer.id }}" data-name="{{ customer.name }}" data-email="{{ customer.email }}" data-phone="{{ customer.phone }}" data-address="{{ customer.address }}" data-service="{{ customer.service }}" data-status="{{ customer.status }}" data-tasker="{{ customer.assigned_tasker }}">
                 <td>{{ customer.name }}</td>
                 <td>{{ customer.email }}</td>
                 <td>{{ customer.service }}</td>
                 <td>{{ customer.status }}</td>
                 <td>
-                    <a class="btn btn-warning btn-sm">Edit - test</a>
+                    <button class="btn btn-warning btn-sm">Edit</button>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-<!-- Modal for Adding Customers -->
-<div class="modal fade" id="customerCreateModal" tabindex="-1" aria-labelledby="customerCreateModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="customerCreateModalLabel">Add Customer</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" enctype="multipart/form-data" action="{% url 'customer_create_view' %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">Phone</label>
-                        <input type="text" class="form-control" id="phone" name="phone" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="service" class="form-label">Service</label>
-                        <input type="text" class="form-control" id="service" name="service" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="" disabled selected>Select Status</option>
-                            {% for key, value in status_choices %}
-                            <option value="{{ key }}">{{ value }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="assigned_tasker" class="form-label">Assigned Tasker</label>
-                        <select class="form-control" id="assigned_tasker" name="assigned_tasker">
-                            <option value="" selected>No Tasker Assigned</option>
-                            {% for tasker in taskers %}
-                            <option value="{{ tasker.id }}">{{ tasker.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="attachments" class="form-label">Attachments</label>
-                        <input type="file" class="form-control" id="attachments" name="attachments" multiple>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </form>
+    <!-- Modal for Editing Customer Details -->
+    <div class="modal fade" id="customerDetailModal" tabindex="-1" aria-labelledby="customerDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="customerDetailModalLabel">Edit Customer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'customer_detail' 0 %}">
+                        {% csrf_token %}
+                        <input type="hidden" id="customer_id" name="customer_id">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="service" class="form-label">Service</label>
+                            <input type="text" class="form-control" id="service" name="service" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-control" id="status" name="status" required>
+                                <option value="" disabled selected>Select Status</option>
+                                {% for key, value in status_choices %}
+                                <option value="{{ key }}">{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assigned_tasker" class="form-label">Assigned Tasker</label>
+                            <select class="form-control" id="assigned_tasker" name="assigned_tasker">
+                                <option value="" selected>No Tasker Assigned</option>
+                                {% for tasker in taskers %}
+                                <option value="{{ tasker.id }}">{{ tasker.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="attachments" class="form-label">Attachments</label>
+                            <input type="file" class="form-control" id="attachments" name="attachments" multiple>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+
 </div>
 
-<!-- JavaScript for Bootstrap Modal -->
+<!-- JavaScript for Bootstrap Modal and populating modal fields -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $('#customerDetailModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var customerId = button.data('id');
+        var name = button.data('name');
+        var email = button.data('email');
+        var phone = button.data('phone');
+        var address = button.data('address');
+        var service = button.data('service');
+        var status = button.data('status');
+        var tasker = button.data('tasker');
+
+        var modal = $(this);
+        modal.find('#customer_id').val(customerId);
+        modal.find('#name').val(name);
+        modal.find('#email').val(email);
+        modal.find('#phone').val(phone);
+        modal.find('#address').val(address);
+        modal.find('#service').val(service);
+        modal.find('#status').val(status);
+        modal.find('#assigned_tasker').val(tasker);
+    });
+</script>
 
 </body>
 </html>
