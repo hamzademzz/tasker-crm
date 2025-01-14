@@ -6,6 +6,24 @@
     <title>Tasker CRM</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        /* Smaller modal size */
+.modal-small .modal-dialog {
+    max-width: 600px; /* Adjust width to make it smaller */
+}
+
+.modal-small .modal-body {
+    max-height: calc(100vh - 210px); /* Ensures modal body doesn't scroll, keeping content visible */
+    overflow-y: auto; /* Enable scrolling only if necessary */
+}
+
+.modal-small .form-control {
+    font-size: 14px; /* Adjust font size for better fitting */
+}
+
+.modal-small .modal-header, .modal-small .modal-footer {
+    padding: 10px 20px; /* Adjust padding for the header and footer */
+}
+
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f9f9f9; /* Lighter background for a clean look */
@@ -237,7 +255,7 @@
 
 <!-- Modal for Editing Customer -->
 <div class="modal fade" id="customerDetailModal" tabindex="-1" aria-labelledby="customerDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-small"> <!-- Added modal-small class -->
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="customerDetailModalLabel">Edit Customer</h5>
@@ -301,6 +319,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- JavaScript for Bootstrap Modal and pre-filling data -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
