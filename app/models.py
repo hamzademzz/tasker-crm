@@ -27,11 +27,13 @@ class Customer(models.Model):
     address = models.TextField()
     service = models.CharField(max_length=255)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
-    assigned_tasker = models.ForeignKey('Tasker', on_delete=models.SET_NULL, null=True, blank=True)  # Change to ForeignKey
-    attachments = models.ManyToManyField(File, blank=True)  # Allow multiple files
+    assigned_tasker = models.ForeignKey('Tasker', on_delete=models.SET_NULL, null=True, blank=True)
+    attachments = models.ManyToManyField(File, blank=True)
+    notes = models.TextField(blank=True, null=True)  # Add notes field
 
     def __str__(self):
         return self.name
+
 
 
 

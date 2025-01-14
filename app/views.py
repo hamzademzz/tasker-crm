@@ -22,6 +22,7 @@ def customer_create_view(request):
         address = request.POST.get('address')
         service = request.POST.get('service')
         status = request.POST.get('status')
+        notes = request.POST.get('notes')  # Handle notes field
         assigned_tasker_id = request.POST.get('assigned_tasker')
 
         # Create a new Customer instance
@@ -33,6 +34,7 @@ def customer_create_view(request):
             address=address,
             service=service,
             status=status,
+            notes=notes,  # Save notes
             assigned_tasker=assigned_tasker,
         )
 
@@ -43,6 +45,7 @@ def customer_create_view(request):
                 customer.attachments.add(file_instance)
 
         return redirect('home')
+
 
 def customer_detail_view(request, customer_id):
     if request.method == 'POST':
@@ -57,6 +60,7 @@ def customer_detail_view(request, customer_id):
         customer.address = request.POST.get('address')
         customer.service = request.POST.get('service')
         customer.status = request.POST.get('status')
+        customer.notes = request.POST.get('notes')  # Update notes
 
         assigned_tasker_id = request.POST.get('assigned_tasker')
         if assigned_tasker_id:
@@ -73,3 +77,4 @@ def customer_detail_view(request, customer_id):
                 customer.attachments.add(file_instance)
 
         return redirect('home')
+
