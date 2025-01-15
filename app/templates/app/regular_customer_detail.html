@@ -7,22 +7,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Smaller modal size */
-.modal-small .modal-dialog {
-    max-width: 600px; /* Adjust width to make it smaller */
-}
+        .modal-small .modal-dialog {
+            max-width: 600px; /* Adjust width to make it smaller */
+        }
 
-.modal-small .modal-body {
-    max-height: calc(100vh - 210px); /* Ensures modal body doesn't scroll, keeping content visible */
-    overflow-y: auto; /* Enable scrolling only if necessary */
-}
+        .modal-small .modal-body {
+            max-height: calc(100vh - 210px); /* Ensures modal body doesn't scroll, keeping content visible */
+            overflow-y: auto; /* Enable scrolling only if necessary */
+        }
 
-.modal-small .form-control {
-    font-size: 14px; /* Adjust font size for better fitting */
-}
+        .modal-small .form-control {
+            font-size: 14px; /* Adjust font size for better fitting */
+        }
 
-.modal-small .modal-header, .modal-small .modal-footer {
-    padding: 10px 20px; /* Adjust padding for the header and footer */
-}
+        .modal-small .modal-header, .modal-small .modal-footer {
+            padding: 10px 20px; /* Adjust padding for the header and footer */
+        }
 
         body {
             font-family: 'Arial', sans-serif;
@@ -117,7 +117,6 @@
             border-color: #e67e22;
         }
     </style>
-    
 </head>
 <body>
 
@@ -126,7 +125,6 @@
     <h4 class="text-center text-white">Tasker CRM</h4>
     <a href="{% url 'home' %}">Customer List</a>
     <a href="{% url 'regular_customer_detail' %}">Regular Customers</a>
-
     <a href="#">Partners</a>
     <a href="#">Previous Customers</a>
     <a href="#">Task Management</a>
@@ -134,51 +132,44 @@
 
 <!-- Main Content -->
 <div class="content">
-    <h1>Customer List</h1>
+    <h1>Regular Customer List</h1>
 
-   <!-- Search Bar -->
-<div class="input-group mb-3">
-    <input type="text" id="customerSearch" class="form-control" placeholder="Search by Name or Email">
-    <div class="input-group-append">
-        <span class="input-group-text">
-            Search
-        </span>
+    <!-- Search Bar -->
+    <div class="input-group mb-3">
+        <input type="text" id="customerSearch" class="form-control" placeholder="Search by Name or Service Type">
+        <div class="input-group-append">
+            <span class="input-group-text">
+                Search
+            </span>
+        </div>
     </div>
-</div>
-
 
     <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#customerCreateModal">Create New Customer</button>
 
     <table class="table table-striped" id="customerTable">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Interested Service</th>
-                <th>Status</th>
+                <th>Customer</th>
+                <th>Service Type</th>
+                <th>Last Service Date</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for customer in customers %}
+            {% for customer in regular_customers %}
             <tr>
-                <td class="customer-name">{{ customer.name }}</td>
-                <td class="customer-email">{{ customer.email }}</td>
-                <td>{{ customer.service }}</td>
-                <td>{{ customer.status }}</td>
+                <td class="customer-name">{{ customer.customer.name }}</td>
+                <td>{{ customer.service_type }}</td>
+                <td>{{ customer.last_service_date }}</td>
                 <td>
                     <button class="btn btn-warning btn-sm edit-btn" 
                             data-toggle="modal" 
                             data-target="#customerDetailModal" 
                             data-id="{{ customer.id }}" 
-                            data-name="{{ customer.name }}" 
-                            data-email="{{ customer.email }}" 
-                            data-phone="{{ customer.phone }}" 
-                            data-address="{{ customer.address }}" 
-                            data-service="{{ customer.service }}" 
-                            data-status="{{ customer.status }}"
-                            data-notes="{{ customer.notes }}" 
-                            data-tasker="{% if customer.assigned_tasker %}{{ customer.assigned_tasker.id }}{% else %}{% endif %}">
+                            data-customer_name="{{ customer.customer.name }}" 
+                            data-service_type="{{ customer.service_type }}" 
+                            data-last_service_date="{{ customer.last_service_date }}" 
+                            data-contract_details="{{ customer.contract_details }}">
                         Edit
                     </button>
                 </td>
@@ -193,60 +184,41 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="customerCreateModalLabel">Add Customer</h5>
+                <h5 class="modal-title" id="customerCreateModalLabel">Add Regular Customer</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form method="POST" enctype="multipart/form-data" action="{% url 'customer_create_view' %}">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'regular_customer_create_view' %}">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">Phone</label>
-                        <input type="text" class="form-control" id="phone" name="phone" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="service" class="form-label">Service</label>
-                        <input type="text" class="form-control" id="service" name="service" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="" disabled selected>Select Status</option>
-                            {% for key, value in status_choices %}
-                            <option value="{{ key }}">{{ value }}</option>
+                        <label for="customer" class="form-label">Customer</label>
+                        <select class="form-control" id="customer" name="customer" required>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="notes" class="form-label">Notes</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="assigned_tasker" class="form-label">Assigned Tasker</label>
-                        <select class="form-control" id="assigned_tasker" name="assigned_tasker">
-                            <option value="" selected>No Tasker Assigned</option>
-                            {% for tasker in taskers %}
-                            <option value="{{ tasker.id }}">{{ tasker.name }}</option>
-                            {% endfor %}
-                        </select>
+                        <label for="service_type" class="form-label">Service Type</label>
+                        <input type="text" class="form-control" id="service_type" name="service_type" required>
                     </div>
                     <div class="mb-3">
-                        <label for="attachments" class="form-label">Attachments</label>
-                        <input type="file" class="form-control" id="attachments" name="attachments" multiple>
+                        <label for="last_service_date" class="form-label">Last Service Date</label>
+                        <input type="date" class="form-control" id="last_service_date" name="last_service_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contract_details" class="form-label">Contract Details</label>
+                        <textarea class="form-control" id="contract_details" name="contract_details" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="invoice" class="form-label">Invoice</label>
+                        <input type="file" class="form-control" id="invoice" name="invoice">
+                    </div>
+                    <div class="mb-3">
+                        <label for="other_documents" class="form-label">Other Documents</label>
+                        <input type="file" class="form-control" id="other_documents" name="other_documents">
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
@@ -260,7 +232,7 @@
     <div class="modal-dialog modal-small"> <!-- Added modal-small class -->
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="customerDetailModalLabel">Edit Customer</h5>
+                <h5 class="modal-title" id="customerDetailModalLabel">Edit Regular Customer</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -270,50 +242,28 @@
                     {% csrf_token %}
                     <input type="hidden" id="customer_id" name="customer_id">
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                        <label for="customer_name" class="form-label">Customer Name</label>
+                        <input type="text" class="form-control" id="customer_name" name="customer_name" disabled>
                     </div>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <label for="service_type" class="form-label">Service Type</label>
+                        <input type="text" class="form-control" id="service_type" name="service_type" required>
                     </div>
                     <div class="mb-3">
-                        <label for="phone" class="form-label">Phone</label>
-                        <input type="text" class="form-control" id="phone" name="phone" required>
+                        <label for="last_service_date" class="form-label">Last Service Date</label>
+                        <input type="date" class="form-control" id="last_service_date" name="last_service_date" required>
                     </div>
                     <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        <label for="contract_details" class="form-label">Contract Details</label>
+                        <textarea class="form-control" id="contract_details" name="contract_details" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="service" class="form-label">Service</label>
-                        <input type="text" class="form-control" id="service" name="service" required>
+                        <label for="invoice" class="form-label">Invoice</label>
+                        <input type="file" class="form-control" id="invoice" name="invoice">
                     </div>
                     <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-control" id="status" name="status" required>
-                            {% for key, value in status_choices %}
-                            <option value="{{ key }}">{{ value }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">Notes</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="assigned_tasker" class="form-label">Assigned Tasker</label>
-                        <select class="form-control" id="assigned_tasker" name="assigned_tasker">
-                            <option value="" selected>No Tasker Assigned</option>
-                            {% for tasker in taskers %}
-                            <option value="{{ tasker.id }}">{{ tasker.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="attachments" class="form-label">Attachments</label>
-                        <input type="file" class="form-control" id="attachments" name="attachments" multiple>
+                        <label for="other_documents" class="form-label">Other Documents</label>
+                        <input type="file" class="form-control" id="other_documents" name="other_documents">
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
@@ -321,7 +271,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- JavaScript for Bootstrap Modal and pre-filling data -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -335,35 +284,34 @@
 
         tableRows.forEach(row => {
             const name = row.querySelector('.customer-name').textContent.toLowerCase();
-            const email = row.querySelector('.customer-email').textContent.toLowerCase();
+            const serviceType = row.querySelector('.customer-service-type').textContent.toLowerCase();
 
-            if (name.includes(searchQuery) || email.includes(searchQuery)) {
+            if (name.includes(searchQuery) || serviceType.includes(searchQuery)) {
                 row.style.display = ''; // Show row
             } else {
                 row.style.display = 'none'; // Hide row
             }
         });
     });
-    
+
     $('#customerDetailModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         var modal = $(this);
 
         // Get data from button
-        modal.find('#customer_id').val(button.data('id'));
-        modal.find('#name').val(button.data('name'));
-        modal.find('#email').val(button.data('email'));
-        modal.find('#phone').val(button.data('phone'));
-        modal.find('#address').val(button.data('address'));
-        modal.find('#service').val(button.data('service'));
-        modal.find('#status').val(button.data('status'));
-        modal.find('#notes').val(button.data('notes'));
+        modal.find('.modal-body #customer_id').val(button.data('id'));
+        modal.find('.modal-body #customer_name').val(button.data('customer_name'));
+        modal.find('.modal-body #service_type').val(button.data('service_type'));
+        modal.find('.modal-body #last_service_date').val(button.data('last_service_date'));
+        modal.find('.modal-body #contract_details').val(button.data('contract_details'));
 
-        modal.find('#assigned_tasker').val(button.data('tasker'));
 
-        // Update form action
-        modal.find('form').attr('action', `/customer/${button.data('id')}/`);
+        modal.find('form').attr('action', `/regular-customers/edit/${button.data('id')}/`);
+
+
+        
     });
 </script>
+
 </body>
 </html>

@@ -38,14 +38,20 @@ class Customer(models.Model):
 
 
 
+from django.db import models
+
 class RegularCustomer(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     service_type = models.CharField(max_length=255)
     last_service_date = models.DateField()
+    service_dates = models.DateField(null=True, blank=True)  # This field will store the dates in JSON format, e.g., for recurring service dates.
     contract_details = models.TextField()
+    invoice = models.FileField(upload_to='invoices/', null=True, blank=True)  # For storing invoices
+    other_documents = models.FileField(upload_to='other_documents/', null=True, blank=True)  # For storing other documents
 
     def __str__(self):
         return self.customer.name
+
 
 class Partner(models.Model):
     name = models.CharField(max_length=255)
