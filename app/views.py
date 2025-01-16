@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, Http404
-from .models import Customer, Tasker, File, RegularCustomer, CompletedJob
+from .models import Customer, Tasker, File, RegularCustomer, CompletedJob, LeadJob
 from .forms import CustomerForm
 
 def home(request):
@@ -169,6 +169,7 @@ def edit_regular_customer(request, id):
 def completed_jobs(request):
     completed_jobs = CompletedJob.objects.all()
     return render(request, 'app/completed_jobs.html', {'completed_jobs': completed_jobs})
+
 
 def lead_jobs(request):
     lead_jobs = LeadJob.objects.all()

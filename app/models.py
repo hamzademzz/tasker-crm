@@ -9,9 +9,6 @@ class File(models.Model):
     def __str__(self):
         return self.name
 
-from django.db import models
-from django.utils.timezone import now
-
 class Customer(models.Model):
     PENDING = 'Pending'
     SITE_VISIT = 'Site Visit'
@@ -52,27 +49,37 @@ class Customer(models.Model):
         
         # Check if the status is being set to 'Lead'
         if self.status == self.LEAD:
-            # Create a new LeadJob entry
+            # Create a new LeadJob entry with valid fields
             LeadJob.objects.create(
                 customer=self,
-                name=self.name,
-                email=self.email,
-                phone=self.phone,
-                address=self.address,
                 service=self.service,
                 status=self.status,
                 assigned_tasker=self.assigned_tasker,
-                attachments=self.attachments.all(),
-                notes=self.notes,
-                date=self.date,
                 price=self.price,
                 lead_date=now()
             )
 
         super().save(*args, **kwargs)
 
+
     def __str__(self):
         return self.name
+
+
+class LeadJob(models.Model):
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, null=True)
+    email = models.EmailField(null=True)
+    phone = models.CharField(max_length=15, null=True)
+    address = models.TextField(null=True)  # Make nullable
+    service = models.CharField(max_length=255)
+    lead_date = models.DateField()
+    status = models.CharField(max_length=50)
+    price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    assigned_tasker = models.ForeignKey('Tasker', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"Lead for {self.customer.name} - {self.service}"
 
 
 class CompletedJob(models.Model):
@@ -84,12 +91,6 @@ class CompletedJob(models.Model):
     def __str__(self):
         return f"{self.customer.name} - {self.service}"
 
-
-
-
-
-
-from django.db import models
 
 class RegularCustomer(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
