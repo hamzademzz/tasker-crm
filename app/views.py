@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, Http404
-from .models import Customer, Tasker, File, RegularCustomer
+from .models import Customer, Tasker, File, RegularCustomer, CompletedJob
 from .forms import CustomerForm
 
 def home(request):
@@ -22,7 +22,9 @@ def customer_create_view(request):
         address = request.POST.get('address')
         service = request.POST.get('service')
         status = request.POST.get('status')
-        notes = request.POST.get('notes')  # Handle notes field
+        notes = request.POST.get('notes') 
+        date = request.POST.get('date') 
+        price = request.POST.get('price') 
         assigned_tasker_id = request.POST.get('assigned_tasker')
 
         # Create a new Customer instance
@@ -36,6 +38,8 @@ def customer_create_view(request):
             status=status,
             notes=notes,  # Save notes
             assigned_tasker=assigned_tasker,
+            date=date,
+            price=price,
         )
 
         # Handle file attachments
@@ -60,7 +64,10 @@ def customer_detail_view(request, customer_id):
         customer.address = request.POST.get('address')
         customer.service = request.POST.get('service')
         customer.status = request.POST.get('status')
-        customer.notes = request.POST.get('notes')  # Update notes
+        customer.notes = request.POST.get('notes')
+        customer.date = request.POST.get('date')
+        customer.price = request.POST.get('price')
+     
 
         assigned_tasker_id = request.POST.get('assigned_tasker')
         if assigned_tasker_id:
@@ -156,3 +163,13 @@ def edit_regular_customer(request, id):
 
     # In case of GET request or incorrect method, redirect
     return redirect('regular_customer_detail')
+
+    from .models import CompletedJob
+
+def completed_jobs(request):
+    completed_jobs = CompletedJob.objects.all()
+    return render(request, 'app/completed_jobs.html', {'completed_jobs': completed_jobs})
+
+def lead_jobs(request):
+    lead_jobs = LeadJob.objects.all()
+    return render(request, 'app/lead_jobs.html', {'lead_jobs': lead_jobs})

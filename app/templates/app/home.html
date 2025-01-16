@@ -126,10 +126,11 @@
     <h4 class="text-center text-white">Tasker CRM</h4>
     <a href="{% url 'home' %}">Customer List</a>
     <a href="{% url 'regular_customer_detail' %}">Regular Customers</a>
-
     <a href="#">Partners</a>
-    <a href="#">Previous Customers</a>
+    <a href="{% url 'completed_jobs' %}">Completed Jobs</a>
+    <a href="{% url 'lead_jobs' %}">Leads</a>
     <a href="#">Task Management</a>
+    <a href="#">Data Export</a>
 </div>
 
 <!-- Main Content -->
@@ -161,31 +162,36 @@
         </thead>
         <tbody>
             {% for customer in customers %}
-            <tr>
-                <td class="customer-name">{{ customer.name }}</td>
-                <td class="customer-email">{{ customer.email }}</td>
-                <td>{{ customer.service }}</td>
-                <td>{{ customer.status }}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm edit-btn" 
-                            data-toggle="modal" 
-                            data-target="#customerDetailModal" 
-                            data-id="{{ customer.id }}" 
-                            data-name="{{ customer.name }}" 
-                            data-email="{{ customer.email }}" 
-                            data-phone="{{ customer.phone }}" 
-                            data-address="{{ customer.address }}" 
-                            data-service="{{ customer.service }}" 
-                            data-status="{{ customer.status }}"
-                            data-notes="{{ customer.notes }}" 
-                            data-tasker="{% if customer.assigned_tasker %}{{ customer.assigned_tasker.id }}{% else %}{% endif %}">
-                        Edit
-                    </button>
-                </td>
-            </tr>
+                {% if customer.status != 'Payment Done' %}
+                    <tr>
+                        <td class="customer-name">{{ customer.name }}</td>
+                        <td class="customer-email">{{ customer.email }}</td>
+                        <td>{{ customer.service }}</td>
+                        <td>{{ customer.status }}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm edit-btn" 
+                                    data-toggle="modal" 
+                                    data-target="#customerDetailModal" 
+                                    data-id="{{ customer.id }}" 
+                                    data-name="{{ customer.name }}" 
+                                    data-email="{{ customer.email }}" 
+                                    data-phone="{{ customer.phone }}" 
+                                    data-address="{{ customer.address }}" 
+                                    data-service="{{ customer.service }}" 
+                                    data-status="{{ customer.status }}"
+                                    data-notes="{{ customer.notes }}" 
+                                    data-date="{{ customer.date }}" 
+                                    data-price="{{ customer.price }}" 
+                                    data-tasker="{% if customer.assigned_tasker %}{{ customer.assigned_tasker.id }}{% else %}{% endif %}">
+                                View/Edit
+                            </button>
+                        </td>
+                    </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>
+    
 </div>
 
 <!-- Modal for Adding Customers -->
@@ -234,7 +240,14 @@
                         <label for="notes" class="form-label">Notes</label>
                         <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
                     </div>
-                    
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                    </div>
                     <div class="mb-3">
                         <label for="assigned_tasker" class="form-label">Assigned Tasker</label>
                         <select class="form-control" id="assigned_tasker" name="assigned_tasker">
@@ -301,6 +314,14 @@
                         <label for="notes" class="form-label">Notes</label>
                         <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
                     </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                    </div>
                     
                     <div class="mb-3">
                         <label for="assigned_tasker" class="form-label">Assigned Tasker</label>
@@ -358,6 +379,8 @@
         modal.find('#service').val(button.data('service'));
         modal.find('#status').val(button.data('status'));
         modal.find('#notes').val(button.data('notes'));
+        modal.find('#date').val(button.data('date'));
+        modal.find('#price').val(button.data('price'));
 
         modal.find('#assigned_tasker').val(button.data('tasker'));
 

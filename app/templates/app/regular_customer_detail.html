@@ -126,8 +126,10 @@
     <a href="{% url 'home' %}">Customer List</a>
     <a href="{% url 'regular_customer_detail' %}">Regular Customers</a>
     <a href="#">Partners</a>
-    <a href="#">Previous Customers</a>
+    <a href="{% url 'completed_jobs' %}">Completed Jobs</a>
+    <a href="#">Leads</a>
     <a href="#">Task Management</a>
+    <a href="#">Data Export</a>
 </div>
 
 <!-- Main Content -->
@@ -170,7 +172,7 @@
                             data-service_type="{{ customer.service_type }}" 
                             data-last_service_date="{{ customer.last_service_date }}" 
                             data-contract_details="{{ customer.contract_details }}">
-                        Edit
+                        View/Edit
                     </button>
                 </td>
             </tr>

@@ -8,4 +8,6 @@ urlpatterns = [
     path('regular-customers/', views.regular_customer_detail, name='regular_customer_detail'),
     path('regular-customers/create/', views.regular_customer_create_view, name='regular_customer_create_view'),  # Updated path
     path('regular-customers/edit/<int:id>/', views.edit_regular_customer, name='edit_regular_customer'),
+    path('completed-jobs/', views.completed_jobs, name='completed_jobs'),
+    path('lead-jobs/', views.lead_jobs, name='lead_jobs'),
 ]
