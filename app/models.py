@@ -35,6 +35,8 @@ class Customer(models.Model):
     notes = models.TextField(blank=True, null=True)
     date = models.DateField(default=now, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    industry = models.CharField(max_length=255, null=True, blank=True)
+    company_name = models.CharField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # Check if the status is being set to 'Payment Done'
