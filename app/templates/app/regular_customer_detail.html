@@ -166,6 +166,8 @@
                 <td class="customer-name">{{ customer.customer.name }}</td>
                 <td>{{ customer.service_type }}</td>
                 <td>{{ customer.last_service_date }}</td>
+                <td>{{ customer.contract_details }}</td>
+                
                 <td>
                     <button class="btn btn-warning btn-sm edit-btn" 
                             data-toggle="modal" 
@@ -215,8 +217,17 @@
                     </div>
                     <div class="mb-3">
                         <label for="contract_details" class="form-label">Contract Details</label>
-                        <textarea class="form-control" id="contract_details" name="contract_details" rows="3"></textarea>
+                        <select class="form-control" id="contract_details" name="contract_details" required>
+                            <option value="Once a week">Once a week</option>
+                            <option value="Twice a week">Twice a week</option>
+                            <option value="Once a month">Once a month</option>
+                            <option value="Twice a month">Twice a month</option>
+                            <option value="Three times a month">Three times a month</option>
+                            <option value="Once every two months">Once every two months</option>
+                            <option value="Twice every two months">Twice every two months</option>
+                        </select>
                     </div>
+                    
                     <div class="mb-3">
                         <label for="invoice" class="form-label">Invoice</label>
                         <input type="file" class="form-control" id="invoice" name="invoice">
@@ -260,8 +271,17 @@
                     </div>
                     <div class="mb-3">
                         <label for="contract_details" class="form-label">Contract Details</label>
-                        <textarea class="form-control" id="contract_details" name="contract_details" rows="3"></textarea>
+                        <select class="form-control" id="contract_details" name="contract_details" required>
+                            <option value="Once a week">Once a week</option>
+                            <option value="Twice a week">Twice a week</option>
+                            <option value="Once a month">Once a month</option>
+                            <option value="Twice a month">Twice a month</option>
+                            <option value="Three times a month">Three times a month</option>
+                            <option value="Once every two months">Once every two months</option>
+                            <option value="Twice every two months">Twice every two months</option>
+                        </select>
                     </div>
+                    
                     <div class="mb-3">
                         <label for="invoice" class="form-label">Invoice</label>
                         <input type="file" class="form-control" id="invoice" name="invoice">

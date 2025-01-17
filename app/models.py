@@ -95,16 +95,31 @@ class CompletedJob(models.Model):
 
 
 class RegularCustomer(models.Model):
+    CONTRACT_DETAILS_CHOICES = [
+        ('Once a week', 'Once a week'),
+        ('Twice a week', 'Twice a week'),
+        ('Once a month', 'Once a month'),
+        ('Twice a month', 'Twice a month'),
+        ('3 times a month', '3 times a month'),
+        ('Once every two months', 'Once every two months'),
+        ('Twice every 2 months', 'Twice every 2 months'),
+    ]
+
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     service_type = models.CharField(max_length=255)
     last_service_date = models.DateField()
-    service_dates = models.DateField(null=True, blank=True)  # This field will store the dates in JSON format, e.g., for recurring service dates.
-    contract_details = models.TextField()
-    invoice = models.FileField(upload_to='invoices/', null=True, blank=True)  # For storing invoices
-    other_documents = models.FileField(upload_to='other_documents/', null=True, blank=True)  # For storing other documents
+    service_dates = models.DateField(null=True, blank=True)
+    contract_details = models.CharField(
+        max_length=50, 
+        choices=CONTRACT_DETAILS_CHOICES, 
+        default='Once a month'
+    )
+    invoice = models.FileField(upload_to='invoices/', null=True, blank=True)
+    other_documents = models.FileField(upload_to='other_documents/', null=True, blank=True)
 
     def __str__(self):
-        return self.customer.name
+        return f"{self.customer.name} - {self.service_type}"
+
 
 
 class Partner(models.Model):

@@ -7,10 +7,12 @@ def home(request):
     customers = Customer.objects.all()
     taskers = Tasker.objects.all()  # Include taskers
     status_choices = Customer.STATUS_CHOICES  # Include status choices
+    regular_customers = RegularCustomer.objects.select_related('customer').all()  # Include regular customers
     return render(request, 'app/home.html', {
         'customers': customers,
         'taskers': taskers,
         'status_choices': status_choices,
+        'regular_customers': regular_customers,  # Pass regular customers
     })
 
 def customer_create_view(request):
@@ -133,8 +135,8 @@ def regular_customer_create_view(request):
 
         regular_customer.save()
 
-
     return redirect('regular_customer_detail')
+
 
 
 def edit_regular_customer(request, id):
@@ -170,6 +172,7 @@ def edit_regular_customer(request, id):
 
     # In case of GET request or incorrect method, redirect
     return redirect('regular_customer_detail')
+
 
     from .models import CompletedJob
 
