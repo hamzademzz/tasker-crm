@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+    {% load static %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tasker CRM</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Smaller modal size */
@@ -121,17 +122,20 @@
 </head>
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar">
-    <h4 class="text-center text-white">Tasker CRM</h4>
-    <a href="{% url 'home' %}">Customer List</a>
-    <a href="{% url 'regular_customer_detail' %}">Regular Customers</a>
-    <a href="#">Partners</a>
-    <a href="{% url 'completed_jobs' %}">Completed Jobs</a>
-    <a href="{% url 'lead_jobs' %}">Leads</a>
-    <a href="#">Task Management</a>
-    <a href="#">Data Export</a>
-</div>
+    <div class="sidebar">
+        <div class="text-center">
+            <img src="media/citytasker.png" alt="City Tasker Logo" class="img-fluid my-3" style="max-width: 150px; border-radius: 50%;">
+        </div>
+        <a href="{% url 'home' %}">Customer List</a>
+        <a href="{% url 'regular_customer_detail' %}">Regular Customers</a>
+        <a href="#">Partners</a>
+        <a href="{% url 'completed_jobs' %}">Completed Jobs</a>
+        <a href="{% url 'lead_jobs' %}">Leads</a>
+        <a href="#">Task Management</a>
+        <a href="#">Data Export</a>
+    </div>
+    
+    
 
 <!-- Main Content -->
 <div class="content">
@@ -181,7 +185,9 @@
                                     data-status="{{ customer.status }}"
                                     data-notes="{{ customer.notes }}" 
                                     data-date="{{ customer.date }}" 
-                                    data-price="{{ customer.price }}" 
+                                    data-price="{{ customer.price }}"
+                                    data-price="{{ customer.industry }}" 
+                                    data-price="{{ customer.company_name }}"  
                                     data-tasker="{% if customer.assigned_tasker %}{{ customer.assigned_tasker.id }}{% else %}{% endif %}">
                                 View/Edit
                             </button>
@@ -261,6 +267,15 @@
                         <label for="attachments" class="form-label">Attachments</label>
                         <input type="file" class="form-control" id="attachments" name="attachments" multiple>
                     </div>
+                    <div class="form-group">
+                        <label for="industry">Industry</label>
+                        <input type="text" name="industry" id="industry" class="form-control" value="{{ customer.industry }}">
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="company_name">Company Name</label>
+                        <input type="text" name="company_name" id="company_name" class="form-control" value="{{ customer.company_name }}">
+                    </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
             </div>
@@ -336,6 +351,15 @@
                         <label for="attachments" class="form-label">Attachments</label>
                         <input type="file" class="form-control" id="attachments" name="attachments" multiple>
                     </div>
+                    <div class="form-group">
+                        <label for="industry">Industry</label>
+                        <input type="text" name="industry" id="industry" class="form-control" value="{{ customer.industry }}">
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="company_name">Company Name</label>
+                        <input type="text" name="company_name" id="company_name" class="form-control" value="{{ customer.company_name }}">
+                    </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
             </div>
@@ -381,6 +405,8 @@
         modal.find('#notes').val(button.data('notes'));
         modal.find('#date').val(button.data('date'));
         modal.find('#price').val(button.data('price'));
+        modal.find('#industry').val(button.data('industry'));
+        modal.find('#company_name').val(button.data('company_name'));
 
         modal.find('#assigned_tasker').val(button.data('tasker'));
 

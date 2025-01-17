@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    {% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -122,12 +123,14 @@
 
 <!-- Sidebar -->
 <div class="sidebar">
-    <h4 class="text-center text-white">Tasker CRM</h4>
+    <div class="text-center">
+        <img src="/media/citytasker.png" alt="City Tasker Logo" class="img-fluid my-3" style="max-width: 150px; border-radius: 50%;">
+    </div>
     <a href="{% url 'home' %}">Customer List</a>
     <a href="{% url 'regular_customer_detail' %}">Regular Customers</a>
     <a href="#">Partners</a>
     <a href="{% url 'completed_jobs' %}">Completed Jobs</a>
-    <a href="#">Leads</a>
+    <a href="{% url 'lead_jobs' %}">Leads</a>
     <a href="#">Task Management</a>
     <a href="#">Data Export</a>
 </div>

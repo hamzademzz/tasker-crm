@@ -26,6 +26,9 @@ def customer_create_view(request):
         date = request.POST.get('date') 
         price = request.POST.get('price') 
         assigned_tasker_id = request.POST.get('assigned_tasker')
+        industry = models.CharField(max_length=255, blank=True, null=True)
+        company_name = models.CharField(max_length=255, blank=True, null=True)
+
 
         # Create a new Customer instance
         assigned_tasker = Tasker.objects.get(id=assigned_tasker_id) if assigned_tasker_id else None
@@ -58,6 +61,7 @@ def customer_detail_view(request, customer_id):
         except Customer.DoesNotExist:
             raise Http404("Customer not found.")
 
+        # Update customer fields with new values
         customer.name = request.POST.get('name')
         customer.email = request.POST.get('email')
         customer.phone = request.POST.get('phone')
@@ -67,8 +71,10 @@ def customer_detail_view(request, customer_id):
         customer.notes = request.POST.get('notes')
         customer.date = request.POST.get('date')
         customer.price = request.POST.get('price')
-     
+        customer.industry = request.POST.get('industry')  # New field
+        customer.company_name = request.POST.get('company_name')  # New field
 
+        # Assign tasker if provided
         assigned_tasker_id = request.POST.get('assigned_tasker')
         if assigned_tasker_id:
             customer.assigned_tasker = Tasker.objects.get(id=assigned_tasker_id)
