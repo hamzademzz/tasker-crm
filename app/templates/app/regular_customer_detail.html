@@ -151,45 +151,55 @@
 
     <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#customerCreateModal">Create New Customer</button>
 
-    <table class="table table-striped" id="customerTable">
-        <thead>
-            <tr>
-                <th>Customer</th>
-                <th>Service Type</th>
-                <th>Last Service Date</th>
-                <th>Next Service Date</th>
-                <th>Contract Details</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for customer in regular_customers %}
-            <tr>
-                <td class="customer-name">{{ customer.customer.name }}</td>
-                <td>{{ customer.service_type }}</td>
-                <td>{{ customer.last_service_date }}</td>
-                <td>{{ customer.service_dates }}</td>
-                <td>{{ customer.contract_details }}</td>
-                
-                
-                
-                <td>
-                    <button class="btn btn-warning btn-sm edit-btn" 
-                            data-toggle="modal" 
-                            data-target="#customerDetailModal" 
-                            data-id="{{ customer.id }}" 
-                            data-customer_name="{{ customer.customer.name }}" 
-                            data-service_type="{{ customer.service_type }}" 
-                            data-last_service_date="{{ customer.last_service_date }}"
-                            data-service_dates="{{ customer.service_dates }}"
-                            data-contract_details="{{ customer.contract_details }}">
-                        View/Edit
-                    </button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Filter Options -->
+<div class="mb-3">
+    <label for="dateFilter" class="form-label">Filter by Next Service Date</label>
+    <select class="form-control" id="dateFilter">
+        <option value="">All</option>
+        <option value="7">Next 7 days</option>
+        <option value="14">Next 14 days</option>
+        <option value="30">Next 30 days</option>
+    </select>
+</div>
+
+<!-- Table -->
+<table class="table table-striped" id="customerTable">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Service Type</th>
+            <th>Last Service Date</th>
+            <th>Next Service Date</th>
+            <th>Contract Details</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in regular_customers %}
+        <tr>
+            <td class="customer-name">{{ customer.customer.name }}</td>
+            <td>{{ customer.service_type }}</td>
+            <td>{{ customer.last_service_date }}</td>
+            <td class="next-service-date">{{ customer.service_dates }}</td>
+            <td>{{ customer.contract_details }}</td>
+            <td>
+                <button class="btn btn-warning btn-sm edit-btn" 
+                        data-toggle="modal" 
+                        data-target="#customerDetailModal" 
+                        data-id="{{ customer.id }}" 
+                        data-customer_name="{{ customer.customer.name }}" 
+                        data-service_type="{{ customer.service_type }}" 
+                        data-last_service_date="{{ customer.last_service_date }}"
+                        data-service_dates="{{ customer.service_dates }}"
+                        data-contract_details="{{ customer.contract_details }}">
+                    View/Edit
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 </div>
 
 <!-- Modal for Adding Customers -->
@@ -351,6 +361,29 @@
 
         
     });
+
+    // JavaScript for filtering based on service dates
+document.getElementById('dateFilter').addEventListener('change', function () {
+    const filterValue = this.value;
+    const today = new Date();
+    const tableRows = document.querySelectorAll('#customerTable tbody tr');
+
+    tableRows.forEach(row => {
+        const nextServiceDate = new Date(row.querySelector('.next-service-date').textContent);
+        const daysDifference = Math.floor((nextServiceDate - today) / (1000 * 60 * 60 * 24));
+
+        if (filterValue === '') {
+            row.style.display = ''; // Show row if no filter selected
+        } else {
+            if (daysDifference >= 0 && daysDifference <= filterValue) {
+                row.style.display = ''; // Show row if within filter range
+            } else {
+                row.style.display = 'none'; // Hide row if not within filter range
+            }
+        }
+    });
+});
+
 </script>
 
 </body>
