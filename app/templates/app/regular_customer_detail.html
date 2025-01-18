@@ -278,8 +278,12 @@
                     {% csrf_token %}
                     <input type="hidden" id="customer_id" name="customer_id">
                     <div class="mb-3">
-                        <label for="customer_name" class="form-label">Customer Name</label>
-                        <input type="text" class="form-control" id="customer_name" name="customer_name" disabled>
+                        <label for="customer" class="form-label">Customer</label>
+                        <select class="form-control" id="customer" name="customer" required>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="service_type" class="form-label">Service Type</label>
