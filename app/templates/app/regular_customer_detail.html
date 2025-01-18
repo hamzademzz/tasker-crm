@@ -157,6 +157,8 @@
                 <th>Customer</th>
                 <th>Service Type</th>
                 <th>Last Service Date</th>
+                <th>Next Service Date</th>
+                <th>Contract Details</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -166,7 +168,10 @@
                 <td class="customer-name">{{ customer.customer.name }}</td>
                 <td>{{ customer.service_type }}</td>
                 <td>{{ customer.last_service_date }}</td>
+                <td>{{ customer.service_dates }}</td>
                 <td>{{ customer.contract_details }}</td>
+                
+                
                 
                 <td>
                     <button class="btn btn-warning btn-sm edit-btn" 
@@ -175,7 +180,8 @@
                             data-id="{{ customer.id }}" 
                             data-customer_name="{{ customer.customer.name }}" 
                             data-service_type="{{ customer.service_type }}" 
-                            data-last_service_date="{{ customer.last_service_date }}" 
+                            data-last_service_date="{{ customer.last_service_date }}"
+                            data-service_dates="{{ customer.service_dates }}"
                             data-contract_details="{{ customer.contract_details }}">
                         View/Edit
                     </button>
@@ -214,6 +220,10 @@
                     <div class="mb-3">
                         <label for="last_service_date" class="form-label">Last Service Date</label>
                         <input type="date" class="form-control" id="last_service_date" name="last_service_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="service_dates" class="form-label">Next Service Date</label>
+                        <input type="date" class="form-control" id="service_dates" name="service_dates" required>
                     </div>
                     <div class="mb-3">
                         <label for="contract_details" class="form-label">Contract Details</label>
@@ -268,6 +278,10 @@
                     <div class="mb-3">
                         <label for="last_service_date" class="form-label">Last Service Date</label>
                         <input type="date" class="form-control" id="last_service_date" name="last_service_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="service_dates" class="form-label">Next Service Date</label>
+                        <input type="date" class="form-control" id="service_dates" name="service_dates" required>
                     </div>
                     <div class="mb-3">
                         <label for="contract_details" class="form-label">Contract Details</label>
@@ -328,6 +342,7 @@
         modal.find('.modal-body #customer_name').val(button.data('customer_name'));
         modal.find('.modal-body #service_type').val(button.data('service_type'));
         modal.find('.modal-body #last_service_date').val(button.data('last_service_date'));
+        modal.find('.modal-body #service_dates').val(button.data('service_dates'));
         modal.find('.modal-body #contract_details').val(button.data('contract_details'));
 
 
