@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, Http404
 from .models import Customer, Tasker, File, RegularCustomer, CompletedJob, LeadJob
 from .forms import CustomerForm
+from django.http import HttpResponse
+
 
 def home(request):
     customers = Customer.objects.all()
@@ -147,6 +149,7 @@ def edit_regular_customer(request, id):
         # Get updated data from the POST request
         service_type = request.POST.get('service_type')
         last_service_date = request.POST.get('last_service_date')
+        service_dates = request.POST.get('service_dates')
         contract_details = request.POST.get('contract_details')
 
         # Check if the data exists before trying to save
@@ -157,6 +160,7 @@ def edit_regular_customer(request, id):
         regular_customer.service_type = service_type
         regular_customer.last_service_date = last_service_date
         regular_customer.contract_details = contract_details
+        regular_customer.service_dates = service_dates
 
         # Optional: Handle file uploads (invoice and other documents)
         if 'invoice' in request.FILES:
