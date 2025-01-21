@@ -6,7 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <style>
+        
         /* Smaller modal size */
 .modal-small .modal-dialog {
     max-width: 600px; /* Adjust width to make it smaller */
@@ -367,6 +370,49 @@
     </div>
 </div>
 
+
+<div class="container mt-4" style="margin-left: auto; margin-right: 0;">
+    <!-- Upload and Export Buttons -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'export_to_excel' %}" class="btn btn-success btn-sm mr-3" style="border-radius: 30px; padding: 8px 15px;">
+            <i class="fas fa-download"></i> Export to Excel
+        </a>
+        <!-- Trigger Modal for Upload -->
+        <button class="btn btn-primary btn-sm" style="border-radius: 30px; padding: 8px 15px;" data-toggle="modal" data-target="#uploadModal">
+            <i class="fas fa-upload"></i> Upload Excel
+        </button>
+    </div>
+
+    <!-- Modal for Upload -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="margin-left: auto; margin-right: 0;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">Upload Excel File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'upload_excel' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="excel_file">Choose an Excel file</label>
+                            <input type="file" name="excel_file" accept=".xlsx, .xls" required class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="border-radius: 30px;">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Include necessary Bootstrap and jQuery scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- JavaScript for Bootstrap Modal and pre-filling data -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

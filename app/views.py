@@ -3,6 +3,9 @@ from django.http import JsonResponse, Http404
 from .models import Customer, Tasker, File, RegularCustomer, CompletedJob, LeadJob
 from .forms import CustomerForm
 from django.http import HttpResponse
+import pandas as pd
+from django.core.files.storage import default_storage
+import os
 
 
 def home(request):
@@ -188,3 +191,91 @@ def completed_jobs(request):
 def lead_jobs(request):
     lead_jobs = LeadJob.objects.all()
     return render(request, 'app/lead_jobs.html', {'lead_jobs': lead_jobs})
+
+def export_to_excel(request):
+    customers = Customer.objects.all()
+    data = [
+        {
+            "Name": customer.name,
+            "Email": customer.email,
+            "Phone": customer.phone,
+            "Address": customer.address,
+            "Service": customer.service,
+            "Status": customer.status,
+            "Date": customer.date,
+            "Price": customer.price,
+            "Industry": customer.industry,
+            "Company Name": customer.company_name,
+        }
+        for customer in customers
+    ]
+
+    df = pd.DataFrame(data)
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=customers.xlsx'
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Customers')
+
+    return response
+
+def upload_excel(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        uploaded_file = request.FILES['excel_file']  # Uploaded file
+
+        # Get the location where files are stored (this depends on your storage backend)
+        storage_location = default_storage.location
+
+        # Ensure the 'tmp' directory exists in the storage location
+        tmp_dir = os.path.join(storage_location, 'tmp')
+        if not os.path.exists(tmp_dir):
+            os.makedirs(tmp_dir)
+
+        try:
+            # Save the file temporarily to the 'tmp' directory
+            temp_file_path = os.path.join(tmp_dir, uploaded_file.name)
+            with default_storage.open(temp_file_path, 'wb+') as temp_file:
+                for chunk in uploaded_file.chunks():
+                    temp_file.write(chunk)
+
+            # Now that the file is saved, load it using pandas
+            df = pd.read_excel(temp_file_path)
+
+            # Process each row of the Excel file
+            for _, row in df.iterrows():
+                name = row.get('Name')
+                email = row.get('Email')
+                phone = row.get('Phone')
+                address = row.get('Address')
+                service = row.get('Service')
+                status = row.get('Status')
+                price = row.get('Price')
+                industry = row.get('Industry')
+                company_name = row.get('Company Name')
+
+                # Ensure the required fields are not empty
+                if not name or not email:
+                    continue  # Skip this row if required data is missing
+
+                # Create or update the customer, allowing Django to handle the date
+                Customer.objects.update_or_create(
+                    email=email,
+                    defaults={
+                        'name': name,
+                        'phone': phone,
+                        'address': address,
+                        'service': service,
+                        'status': status,
+                        'price': price,
+                        'industry': industry,
+                        'company_name': company_name,
+                    },
+                )
+
+            # Optionally, delete the temporary file after processing
+            default_storage.delete(temp_file_path)
+
+            return redirect('home')
+        except Exception as e:
+            return HttpResponse(f"Error processing file: {str(e)}", status=500)
+
+    return redirect('home')
