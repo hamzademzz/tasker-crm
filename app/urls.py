@@ -12,4 +12,7 @@ urlpatterns = [
     path('lead-jobs/', views.lead_jobs, name='lead_jobs'),
     path('export/', views.export_to_excel, name='export_to_excel'),
     path('upload-excel/', views.upload_excel, name='upload_excel'),
+    path('regular-customers/export/', views.export_regular_customers, name='export_regular_customers'),
+    path('regular-customers/upload/', views.upload_regular_customer_excel, name='upload_regular_customer_excel'),
+
 ]

@@ -279,3 +279,63 @@ def upload_excel(request):
             return HttpResponse(f"Error processing file: {str(e)}", status=500)
 
     return redirect('home')
+
+
+def export_regular_customers(request):
+    regular_customers = RegularCustomer.objects.all()
+    data = [
+        {
+            "Name": rc.customer.name,
+            "Service Type": rc.service_type,
+            "Last Service Date": rc.last_service_date,
+            "Service Dates": rc.service_dates,
+            "Contract Details": rc.contract_details,
+        }
+        for rc in regular_customers
+    ]
+
+    df = pd.DataFrame(data)
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=regular_customers.xlsx'
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Regular Customers')
+
+    return response
+
+
+def upload_regular_customer_excel(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        uploaded_file = request.FILES['excel_file']
+
+        try:
+            df = pd.read_excel(uploaded_file)
+
+            for _, row in df.iterrows():
+                customer_name = row.get('Name')
+                service_type = row.get('Service Type')
+                last_service_date = row.get('Last Service Date')
+                service_dates = row.get('Service Dates')
+                contract_details = row.get('Contract Details')
+
+                if not customer_name or not service_type or not last_service_date:
+                    continue
+
+                customer = Customer.objects.filter(name=customer_name).first()
+                if not customer:
+                    continue
+
+                RegularCustomer.objects.update_or_create(
+                    customer=customer,
+                    defaults={
+                        'service_type': service_type,
+                        'last_service_date': last_service_date,
+                        'service_dates': service_dates,
+                        'contract_details': contract_details,
+                    },
+                )
+
+            return redirect('regular_customer_detail')
+        except Exception as e:
+            return HttpResponse(f"Error processing file: {str(e)}", status=500)
+
+    return redirect('regular_customer_detail')
