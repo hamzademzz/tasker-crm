@@ -14,5 +14,6 @@ urlpatterns = [
     path('upload-excel/', views.upload_excel, name='upload_excel'),
     path('regular-customers/export/', views.export_regular_customers, name='export_regular_customers'),
     path('regular-customers/upload/', views.upload_regular_customer_excel, name='upload_regular_customer_excel'),
-
+    path('export-completed-jobs/', views.export_completed_jobs, name='export_completed_jobs'),
+    path('upload-completed-jobs/', views.upload_completed_jobs, name='upload_completed_jobs'),
 ]

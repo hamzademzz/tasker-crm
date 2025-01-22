@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer, RegularCustomer, Partner, Firm, Tasker
+from .models import Customer, RegularCustomer, Partner, Firm, Tasker, LeadJob, CompletedJob, File
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
@@ -23,3 +23,20 @@ class FirmAdmin(admin.ModelAdmin):
 class TaskerAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
     search_fields = ('name', 'email')
+
+@admin.register(LeadJob)
+class LeadJobAdmin(admin.ModelAdmin):
+    list_display = ('customer', 'service', 'lead_date', 'status', 'assigned_tasker')
+    search_fields = ('customer__name', 'service', 'status')
+    list_filter = ('lead_date', 'status')
+
+@admin.register(CompletedJob)
+class CompletedJobAdmin(admin.ModelAdmin):
+    list_display = ('customer', 'service', 'completed_date', 'price')
+    search_fields = ('customer__name', 'service')
+    list_filter = ('completed_date',)
+
+@admin.register(File)
+class FileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'file')
+    search_fields = ('name',)

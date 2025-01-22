@@ -339,3 +339,60 @@ def upload_regular_customer_excel(request):
             return HttpResponse(f"Error processing file: {str(e)}", status=500)
 
     return redirect('regular_customer_detail')
+
+
+def export_completed_jobs(request):
+    completed_jobs = CompletedJob.objects.all()
+    data = [
+        {
+            "Customer Name": cj.customer.name,
+            "Service": cj.service,
+            "Completed Date": cj.completed_date,  # Keep as Completed Date
+            "Price": cj.price,
+        }
+        for cj in completed_jobs
+    ]
+
+    df = pd.DataFrame(data)
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=completed_jobs.xlsx'
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Completed Jobs')
+
+    return response
+
+def upload_completed_jobs(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        uploaded_file = request.FILES['excel_file']
+        try:
+            # Read the Excel file into a DataFrame
+            df = pd.read_excel(uploaded_file)
+
+            # Ensure the 'Completed Date' column is in the correct date format
+            df['Completed Date'] = pd.to_datetime(df['Completed Date'], errors='coerce')
+
+            # Check for invalid dates
+            if df['Completed Date'].isnull().any():
+                return HttpResponse("Error: Invalid date format in the file.", status=400)
+
+            # Iterate over the DataFrame rows and save to the database
+            for _, row in df.iterrows():
+                # Get the customer instance by name
+                customer_name = row['Customer Name']
+                customer = Customer.objects.filter(name=customer_name).first()
+
+                # If the customer does not exist, create a new one (optional)
+                if not customer:
+                    customer = Customer.objects.create(name=customer_name)
+
+                # Create a new CompletedJob entry
+                CompletedJob.objects.create(
+                    customer=customer,                       # ForeignKey
+                    service=row['Service'],                  # CharField
+                    completed_date=row['Completed Date'].date(),  # DateField
+                    price=row['Price']                       # DecimalField
+                )
+            return redirect('completed_jobs')  # Redirect to the completed jobs page
+        except Exception as e:
+            return HttpResponse(f"Error processing file: {str(e)}", status=500)
+    return HttpResponse("Invalid request method.", status=400)
