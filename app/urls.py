@@ -19,4 +19,5 @@ urlpatterns = [
     path('partners/', views.partners, name='partners'),  # Partner list page
     path('partners/save/', views.save_partner, name='save_partner'),  # Save Partner (Create or Update)
     path('partners/upload/', views.upload_partners, name='upload_partners'),  # Upload Partners Excel file
+    path('skip_hire/', views.skip_hire, name='skip_hire'),
 ]

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skip Hire Pricing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        input, select {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        #totalPrice {
+            font-size: 20px;
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Skip Hire Pricing</h1>
+        
+        <label for="postcode">Enter your postcode:</label>
+        <input type="text" id="postcode" placeholder="Enter postcode" oninput="calculatePrice()">
+
+        <label for="skipType">Select Skip Type:</label>
+        <select id="skipType" onchange="calculatePrice()">
+            <option value="8yard">8 Yard Skip (Mix)</option>
+            <option value="enc8yard">Enc 8 Yard Skip (Mix)</option>
+            <option value="crane8yard">8 Yard Crane Skip (Mix)</option>
+            <option value="10yard">10 Yard Skip (Mix)</option>
+            <option value="12yard">12 Yard Skip (Mix)</option>
+            <option value="enc12yard">Enc 12 Yard Skip (Mix)</option>
+            <option value="16yard">16 Yard Skip (Mix)</option>
+            <option value="20yardHardcore">20-40 Yard Hardcore</option>
+            <option value="20yardConcrete">20-40 Yard Concrete</option>
+            <option value="perTonneWood">Per Tonne Wood</option>
+            <option value="perTonnePlasteboard">Per Tonne Plasteboard</option>
+            <option value="perTonneMuck">Per Tonne Muck</option>
+            <option value="grab">Grab (Mix)</option>
+        </select>
+
+        <div id="priceDisplay">
+            <p id="totalPrice">Total Price: £0.00</p>
+        </div>
+    </div>
+
+    <script>
+        const zonePrices = {
+            "8yard": {
+                "zone1": { base: 300, vat: 60, haulage: 0, total: 360, profit: 55, profitVat: 11, profitTotal: 66 },
+                "zone2": { base: 310, vat: 62, haulage: 0, total: 372, profit: 55, profitVat: 11, profitTotal: 66 },
+                "zone3": { base: 320, vat: 64, haulage: 0, total: 384, profit: 55, profitVat: 11, profitTotal: 66 }
+            },
+            "enc8yard": {
+                "zone1": { base: 300, vat: 60, haulage: 0, total: 360, profit: 45, profitVat: 9, profitTotal: 54 },
+                "zone2": { base: 310, vat: 62, haulage: 0, total: 372, profit: 45, profitVat: 9, profitTotal: 54 },
+                "zone3": { base: 320, vat: 64, haulage: 0, total: 384, profit: 45, profitVat: 9, profitTotal: 54 }
+            },
+            "crane8yard": {
+                "zone1": { base: 300, vat: 60, haulage: 0, total: 360, profit: 55, profitVat: 11, profitTotal: 66 },
+                "zone2": { base: 310, vat: 62, haulage: 0, total: 372, profit: 55, profitVat: 11, profitTotal: 66 },
+                "zone3": { base: 320, vat: 64, haulage: 0, total: 384, profit: 55, profitVat: 11, profitTotal: 66 }
+            },
+            "10yard": {
+                "zone1": { base: 320, vat: 64, haulage: 0, total: 384, profit: 50, profitVat: 10, profitTotal: 60 },
+                "zone2": { base: 330, vat: 66, haulage: 0, total: 396, profit: 50, profitVat: 10, profitTotal: 60 },
+                "zone3": { base: 340, vat: 68, haulage: 0, total: 408, profit: 50, profitVat: 10, profitTotal: 60 }
+            },
+            "12yard": {
+                "zone1": { base: 340, vat: 68, haulage: 0, total: 408, profit: 50, profitVat: 10, profitTotal: 60 },
+                "zone2": { base: 350, vat: 70, haulage: 0, total: 420, profit: 50, profitVat: 10, profitTotal: 60 },
+                "zone3": { base: 360, vat: 72, haulage: 0, total: 432, profit: 50, profitVat: 10, profitTotal: 60 }
+            },
+            "enc12yard": {
+                "zone1": { base: 340, vat: 68, haulage: 0, total: 408, profit: 45, profitVat: 9, profitTotal: 54 },
+                "zone2": { base: 350, vat: 70, haulage: 0, total: 420, profit: 45, profitVat: 9, profitTotal: 54 },
+                "zone3": { base: 360, vat: 72, haulage: 0, total: 432, profit: 45, profitVat: 9, profitTotal: 54 }
+            },
+            "16yard": {
+                "zone1": { base: 340, vat: 68, haulage: 0, total: 408, profit: 50, profitVat: 10, profitTotal: 60 },
+                "zone2": { base: 350, vat: 70, haulage: 0, total: 420, profit: 50, profitVat: 10, profitTotal: 60 },
+                "zone3": { base: 410, vat: 82, haulage: 0, total: 492, profit: 50, profitVat: 10, profitTotal: 60 }
+            },
+            "20yardHardcore": {
+                "zone1": { base: 350, vat: 70, haulage: 0, total: 420, profit: 100, profitVat: 20, profitTotal: 120 },
+                "zone2": { base: 450, vat: 90, haulage: 0, total: 540, profit: 100, profitVat: 20, profitTotal: 120 },
+                "zone3": { base: 550, vat: 110, haulage: 0, total: 660, profit: 100, profitVat: 20, profitTotal: 120 }
+            },
+            "20yardConcrete": {
+                "zone1": { base: 350, vat: 70, haulage: 0, total: 420, profit: 150, profitVat: 30, profitTotal: 180 },
+                "zone2": { base: 450, vat: 90, haulage: 0, total: 540, profit: 150, profitVat: 30, profitTotal: 180 },
+                "zone3": { base: 550, vat: 110, haulage: 0, total: 660, profit: 150, profitVat: 30, profitTotal: 180 }
+            },
+            "perTonneWood": {
+                "zone1": { base: 100, vat: 20, haulage: 180, total: 300, profit: 30, profitVat: 6, profitTotal: 36 },
+                "zone2": { base: 100, vat: 20, haulage: 180, total: 300, profit: 30, profitVat: 6, profitTotal: 36 },
+                "zone3": { base: 100, vat: 20, haulage: 180, total: 300, profit: 30, profitVat: 6, profitTotal: 36 }
+            },
+            "perTonnePlasteboard": {
+                "zone1": { base: 200, vat: 40, haulage: 180, total: 420, profit: 55, profitVat: 11, profitTotal: 66 },
+                "zone2": { base: 200, vat: 40, haulage: 180, total: 420, profit: 55, profitVat: 11, profitTotal: 66 },
+                "zone3": { base: 200, vat: 40, haulage: 180, total: 420, profit: 55, profitVat: 11, profitTotal: 66 }
+            },
+            "perTonneMuck": {
+                "zone1": { base: 60, vat: 12, haulage: 180, total: 252, profit: 35, profitVat: 7, profitTotal: 42 },
+                "zone2": { base: 60, vat: 12, haulage: 180, total: 252, profit: 35, profitVat: 7, profitTotal: 42 },
+                "zone3": { base: 60, vat: 12, haulage: 180, total: 252, profit: 35, profitVat: 7, profitTotal: 42 }
+            },
+            "grab": {
+                "zone1": { base: 600, vat: 120, haulage: 0, total: 720, profit: 50, profitVat: 10, profitTotal: 60 },
+                "zone2": { base: 600, vat: 120, haulage: 0, total: 720, profit: 50, profitVat: 10, profitTotal: 60 },
+                "zone3": { base: 600, vat: 120, haulage: 0, total: 720, profit: 50, profitVat: 10, profitTotal: 60 }
+            }
+        };
+
+        const zones = {
+            "EN1": "zone1", "EN2": "zone1", "EN3": "zone1", "EN4": "zone1", "N13": "zone1", "N14": "zone1", "N15": "zone1", "N21": "zone1",
+            "CM16": "zone2", "CM17": "zone2", "CM18": "zone2", "CM19": "zone2", "AL1": "zone3", "E4": "zone3", "EC1": "zone3", "EC2": "zone3", "EC3": "zone3", "EC4": "zone3",
+            "CM20": "zone2", "CM21": "zone2", "CM22": "zone2", "CM23": "zone2", "IG5": "zone2", "IG6": "zone2", "IG8": "zone2", "IG9": "zone2", "E15": "zone2", "E16": "zone2",
+            "HA0": "zone3", "HA7": "zone3", "HA8": "zone3", "HA9": "zone3", "IG10": "zone1", "EN5": "zone1", "EN6": "zone1", "NW1": "zone2", "NW6": "zone2", "NW7": "zone2",
+            "NW8": "zone2", "NW9": "zone2", "NW10": "zone2", "WD6": "zone2", "WD7": "zone2", "WD17": "zone2", "WD18": "zone2", "WD19": "zone2", "WD23": "zone2", "WD24": "zone2",
+            "WD25": "zone2", "N8": "zone2", "N9": "zone2", "N10": "zone2", "N17": "zone2", "N18": "zone2", "N22": "zone2", "EN7": "zone1", "EN9": "zone1", "IG1": "zone2",
+            "IG2": "zone2", "IG3": "zone2", "IG4": "zone2", "IG7": "zone2", "IG11": "zone2", "N1": "zone1", "N1C": "zone1", "N1P": "zone1", "N2": "zone1", "N3": "zone1",
+            "N4": "zone1", "N5": "zone1", "N6": "zone1", "N7": "zone1", "N16": "zone2", "N19": "zone2", "N20": "zone2", "NW2": "zone2", "NW3": "zone2", "NW4": "zone2",
+            "NW5": "zone2", "RM1": "zone2", "RM4": "zone2", "RM5": "zone2", "RM6": "zone2"
+        };
+
+        function getZone(postcode) {
+            let zone = zones[postcode.toUpperCase()];
+            return zone || "zone1"; // Default to zone1 if postcode is not found
+        }
+
+        function calculatePrice() {
+            let postcode = document.getElementById("postcode").value;
+            let skipType = document.getElementById("skipType").value;
+
+            let zone = getZone(postcode);
+            let priceDetails = zonePrices[skipType][zone];
+
+            let totalPrice = priceDetails.total;
+
+            document.getElementById("totalPrice").innerText = `Total Price: £${totalPrice.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>

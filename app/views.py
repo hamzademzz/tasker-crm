@@ -450,3 +450,6 @@ def upload_partners(request):
             return HttpResponse(f"Error processing file: {str(e)}", status=500)
 
     return HttpResponse("Invalid request method.", status=400)
+
+def skip_hire(request):
+    return render(request, 'app/skip_hire.html')
