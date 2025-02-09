@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partners</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Modal styling and body, similar to the one used in completed jobs */
+        .modal-small .modal-dialog {
+            max-width: 600px;
+        }
+
+        .modal-small .modal-body {
+            max-height: calc(100vh - 210px);
+            overflow-y: auto;
+        }
+
+        .modal-small .form-control {
+            font-size: 14px;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding-top: 30px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 12px 18px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar a:hover {
+            background-color: #2980b9;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: left;
+            border-bottom: 2px solid #2980b9;
+            padding-bottom: 10px;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .table {
+            margin-top: 20px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+        }
+
+        .input-group {
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .input-group-text {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+        }
+
+        .modal-header {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .modal-footer button {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="text-center">
+            <img src="/media/citytasker.png" alt="City Tasker Logo" class="img-fluid my-3" style="max-width: 150px; border-radius: 50%;">
+        </div>
+        <a href="{% url 'home' %}">Customer List</a>
+        <a href="{% url 'regular_customer_detail' %}">Regular Customers</a>
+        <a href="{% url 'partners' %}" class="active">Partners</a>
+        <a href="{% url 'completed_jobs' %}">Completed Jobs</a>
+        <a href="{% url 'lead_jobs' %}">Leads</a>
+        <a href="#">Task Management</a>
+        <a href="#">Data Export</a>
+    </div>
+
+    <div class="content">
+        <h1>Partners</h1>
+
+        <!-- Search Bar (Optional) -->
+        <div class="input-group mb-3">
+            <input type="text" id="partnerSearch" class="form-control" placeholder="Search by Name or Category">
+            <div class="input-group-append">
+                <span class="input-group-text">Search</span>
+            </div>
+        </div>
+
+        <!-- Partner Table -->
+        <table class="table table-striped" id="partnersTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for partner in partners %}
+                <tr>
+                    <td>{{ partner.name }}</td>
+                    <td>{{ partner.category }}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#partnerModal" data-id="{{ partner.id }}" data-name="{{ partner.name }}" data-category="{{ partner.category }}">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Upload and Export Buttons -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{% url 'upload_partners' %}" class="btn btn-success btn-sm mr-3">
+                <i class="fas fa-download"></i> Export Partners (Excel)
+            </a>
+            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#partnerModal">
+                <i class="fas fa-plus"></i> Add Partner
+            </button>
+        </div>
+
+        <!-- Modal for Create/Update Partner -->
+        <div class="modal fade" id="partnerModal" tabindex="-1" role="dialog" aria-labelledby="partnerModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-small" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="partnerModalLabel">Create/Update Partner</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="partnerForm" action="{% url 'save_partner' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" id="partner_id" name="partner_id">
+                            <div class="form-group">
+                                <label for="name">Partner Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <input type="text" class="form-control" id="category" name="category" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Partner</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Include necessary Bootstrap and jQuery scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Pre-fill modal data when editing a partner
+        $('#partnerModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var partnerId = button.data('id');
+            var partnerName = button.data('name');
+            var partnerCategory = button.data('category');
+
+            var modal = $(this);
+            modal.find('.modal-title').text(partnerId ? 'Edit Partner' : 'Add Partner');
+            modal.find('#partner_id').val(partnerId || '');
+            modal.find('#name').val(partnerName || '');
+            modal.find('#category').val(partnerCategory || '');
+        });
+    </script>
+</body>
+</html>

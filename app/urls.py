@@ -16,4 +16,7 @@ urlpatterns = [
     path('regular-customers/upload/', views.upload_regular_customer_excel, name='upload_regular_customer_excel'),
     path('export-completed-jobs/', views.export_completed_jobs, name='export_completed_jobs'),
     path('upload-completed-jobs/', views.upload_completed_jobs, name='upload_completed_jobs'),
+    path('partners/', views.partners, name='partners'),  # Partner list page
+    path('partners/save/', views.save_partner, name='save_partner'),  # Save Partner (Create or Update)
+    path('partners/upload/', views.upload_partners, name='upload_partners'),  # Upload Partners Excel file
 ]

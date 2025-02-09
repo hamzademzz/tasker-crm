@@ -396,3 +396,57 @@ def upload_completed_jobs(request):
         except Exception as e:
             return HttpResponse(f"Error processing file: {str(e)}", status=500)
     return HttpResponse("Invalid request method.", status=400)
+
+from django.shortcuts import render, redirect
+from .models import Partner
+from django.http import HttpResponse
+import pandas as pd
+
+# Display the list of partners and provide create/update functionality
+def partners(request):
+    partners_list = Partner.objects.all()
+    return render(request, 'app/partners.html', {'partners': partners_list})
+
+# Handle Partner Create/Update
+def save_partner(request):
+    if request.method == 'POST':
+        partner_id = request.POST.get('partner_id')
+        name = request.POST.get('name')
+        category = request.POST.get('category')
+
+        # If partner_id is provided, update existing partner, otherwise create new one
+        if partner_id:
+            partner = Partner.objects.get(id=partner_id)
+            partner.name = name
+            partner.category = category
+            partner.save()
+        else:
+            # Create a new partner
+            Partner.objects.create(name=name, category=category)
+
+        return redirect('partners')  # Redirect back to partners page
+
+# Handle Excel File Upload for Partners
+def upload_partners(request):
+    if request.method == 'POST' and request.FILES.get('excel_file'):
+        uploaded_file = request.FILES['excel_file']
+        try:
+            df = pd.read_excel(uploaded_file)
+
+            # Check for necessary columns
+            required_columns = ['Partner Name', 'Category']
+            if not all(col in df.columns for col in required_columns):
+                return HttpResponse("Error: Missing required columns.", status=400)
+
+            for _, row in df.iterrows():
+                Partner.objects.update_or_create(
+                    name=row['Partner Name'],
+                    category=row['Category']
+                )
+
+            return redirect('partners')  # Redirect to the partner list page
+
+        except Exception as e:
+            return HttpResponse(f"Error processing file: {str(e)}", status=500)
+
+    return HttpResponse("Invalid request method.", status=400)
