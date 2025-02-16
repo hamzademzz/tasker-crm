@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <script>
+        function showPopup(message) {
+            alert(message);  // This will show the popup
+        }
+    </script>
+
+    <style>
+        
+        /* Smaller modal size */
+.modal-small .modal-dialog {
+    max-width: 600px; /* Adjust width to make it smaller */
+}
+
+.modal-small .modal-body {
+    max-height: calc(100vh - 210px); /* Ensures modal body doesn't scroll, keeping content visible */
+    overflow-y: auto; /* Enable scrolling only if necessary */
+}
+
+.modal-small .form-control {
+    font-size: 14px; /* Adjust font size for better fitting */
+}
+
+.modal-small .modal-header, .modal-small .modal-footer {
+    padding: 10px 20px; /* Adjust padding for the header and footer */
+}
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9; /* Lighter background for a clean look */
+            color: #333; /* Dark text for better readability */
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 250px;
+            background-color: #2c3e50; /* Dark gray for sidebar */
+            color: white;
+            padding-top: 30px;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 12px 18px;
+            border-bottom: 1px solid #34495e; /* Slightly lighter gray for borders */
+        }
+        .sidebar a:hover {
+            background-color: #2980b9; /* Lighter blue for hover effect */
+        }
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50; /* Dark gray for the header */
+            margin-bottom: 20px;
+            text-align: left;
+            border-bottom: 2px solid #2980b9; /* Blue underline for the title */
+            padding-bottom: 10px;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .table {
+            margin-top: 20px;
+            background-color: #fff; /* White background for the table */
+            border: 1px solid #e0e0e0; /* Light border for the table */
+        }
+        .input-group {
+            max-width: 400px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .input-group-text {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 0;
+        }
+        .input-group .form-control {
+            border-radius: 0;
+            border: 1px solid #2980b9;
+        }
+        .input-group .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        .input-group .form-control::placeholder {
+            color: #2980b9;
+        }
+        .modal-header {
+            background-color: #2c3e50; /* Dark gray for modal header */
+            color: white;
+        }
+        .modal-footer button {
+            background-color: #2980b9;
+            color: white;
+        }
+        .btn-primary {
+            background-color: #3498db; /* Light blue for buttons */
+            border-color: #3498db;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        .btn-warning {
+            background-color: #f39c12; /* Orange for edit button */
+            border-color: #f39c12;
+        }
+        .btn-warning:hover {
+            background-color: #e67e22;
+            border-color: #e67e22;
+        }
+    </style>
+    
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="text-center">
+            <img src="/media/citytasker.png" alt="City Tasker Logo" class="img-fluid my-3" style="max-width: 150px; border-radius: 50%;">
+        </div>
+        <a href="">Open Jobs</a>
+        <a href="{% url 'completed_jobs' %}">Completed Jobs</a>
+        
+    </div>
+    
+    {% if tasker_details %}
+    <script>
+        // Show the tasker's details in a popup
+        showPopup("{{ tasker_details }}");
+    </script>
+{% endif %}
+
+
+</body>
+</html>

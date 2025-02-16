@@ -7,7 +7,27 @@ import pandas as pd
 from django.core.files.storage import default_storage
 import os
 
+from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
 
+# Custom LoginView to handle redirection based on the username
+class CustomLoginView(LoginView):
+    template_name = 'app/login.html'
+
+    def get_success_url(self):
+        # Check the username and redirect accordingly
+        if self.request.user.username == 'admin':
+            return reverse_lazy('home')  # Redirect to home (admin should see home)
+        else:
+            return reverse_lazy('tasker')  # Redirect to tasker for other users
+
+@login_required
+def tasker(request):
+    return render(request, 'app/tasker.html')
+
+@login_required
 def home(request):
     customers = Customer.objects.all()
     taskers = Tasker.objects.all()  # Include taskers
@@ -183,9 +203,59 @@ def edit_regular_customer(request, id):
 
     from .models import CompletedJob
 
+from django.shortcuts import render
+from .models import Customer, Tasker
+
 def completed_jobs(request):
-    completed_jobs = CompletedJob.objects.all()
+    # Initialize the completed_jobs list
+    completed_jobs = []
+    tasker_details = None  # Variable to store tasker details
+    
+    # Check if the logged-in user is "admin" or a tasker
+    if request.user.username == 'admin':
+        # If the user is admin, show all jobs
+        completed_jobs = Customer.objects.all()
+    else:
+        try:
+            # Find the Tasker where email matches the username (case-insensitive)
+            tasker = Tasker.objects.get(email__iexact=request.user.username)  # case-insensitive check
+            
+            # Store tasker details to pass to the template
+            tasker_details = f"Tasker Name: {tasker.name}, Email: {tasker.email}"
+            
+            # Get jobs assigned to this Tasker
+            completed_jobs = tasker.tasks.all()
+        except Tasker.DoesNotExist:
+            # If no Tasker exists for this user, keep the completed_jobs as an empty list
+            completed_jobs = []
+    
+    return render(request, 'app/completed_jobs.html', {
+        'completed_jobs': completed_jobs,
+        'tasker_details': tasker_details
+    })
+    # Initialize the completed_jobs list
+    completed_jobs = []
+    
+    # Check if the logged-in user is "admin" or a tasker
+    if request.user.username == 'admin':
+        # If the user is admin, show all jobs
+        completed_jobs = Customer.objects.all()
+    else:
+        try:
+            # Find the Tasker where email matches the username (case-insensitive)
+            tasker = Tasker.objects.get(email__iexact=request.user.username)  # case-insensitive check
+            
+            # Print the tasker to the console for debugging
+            print("Tasker found:", tasker)
+            
+            # Get jobs assigned to this Tasker
+            completed_jobs = tasker.tasks.all()
+        except Tasker.DoesNotExist:
+            # If no Tasker exists for this user, keep the completed_jobs as an empty list
+            completed_jobs = []
+    
     return render(request, 'app/completed_jobs.html', {'completed_jobs': completed_jobs})
+
 
 
 def lead_jobs(request):
