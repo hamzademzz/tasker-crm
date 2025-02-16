@@ -30,7 +30,7 @@ class Customer(models.Model):
     address = models.TextField()
     service = models.CharField(max_length=255)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
-    assigned_tasker = models.ForeignKey('Tasker', on_delete=models.SET_NULL, null=True, blank=True)
+    assigned_tasker = models.ForeignKey('Tasker', on_delete=models.SET_NULL, null=True, blank=True)  # Keep tasker reference here
     attachments = models.ManyToManyField(File, blank=True)
     notes = models.TextField(blank=True, null=True)
     date = models.DateField(default=now, blank=True)
@@ -46,7 +46,8 @@ class Customer(models.Model):
                 customer=self,
                 service=self.service,
                 completed_date=now(),
-                price=self.price
+                price=self.price,
+                assigned_tasker=self.assigned_tasker  # Assign tasker here
             )
         
         # Check if the status is being set to 'Lead'
@@ -63,9 +64,9 @@ class Customer(models.Model):
 
         super().save(*args, **kwargs)
 
-
     def __str__(self):
         return self.name
+
 
 
 class LeadJob(models.Model):
@@ -89,6 +90,7 @@ class CompletedJob(models.Model):
     service = models.CharField(max_length=255)
     completed_date = models.DateField(default=now)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    assigned_tasker = models.ForeignKey('Tasker', on_delete=models.SET_NULL, null=True, blank=True)  # Link directly to Tasker
 
     def __str__(self):
         return f"{self.customer.name} - {self.service}"
@@ -140,7 +142,6 @@ class Firm(models.Model):
 class Tasker(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField()
-    tasks = models.ManyToManyField(Customer, related_name='assigned_tasks', blank=True)
 
     def __str__(self):
         return self.name

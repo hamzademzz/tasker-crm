@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Open Jobs</title>
+    <style>
+
+        /* Positioning the logout button at the bottom right */
+        .logout-btn-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 12px 18px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Common Styles for Sidebar and Table */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding-top: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar .logo img {
+            max-width: 150px;
+            border-radius: 50%;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 12px 18px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar a:hover {
+            background-color: #2980b9;
+        }
+
+
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: left;
+            border-bottom: 2px solid #2980b9;
+            padding-bottom: 10px;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .table {
+            margin-top: 20px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+        }
+
+        .input-group {
+            max-width: 400px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group-text {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 0;
+        }
+
+        .input-group .form-control {
+            border-radius: 0;
+            border: 1px solid #2980b9;
+        }
+
+        .input-group .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .input-group .form-control::placeholder {
+            color: #2980b9;
+        }
+
+        .modal-header {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .modal-footer button {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+            border-color: #f39c12;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+            border-color: #e67e22;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="text-center">
+            <img src="/media/citytasker.png" alt="City Tasker Logo" class="img-fluid my-3" style="max-width: 150px; border-radius: 50%;">
+        </div>
+        <a href="{% url 'open_jobs' %}">Open Jobs</a>
+        <a href="{% url 'completed_jobs' %}">Completed Jobs</a>
+        
+    </div>
+
+    <div class="content">
+        <h1>Open Jobs</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Service</th>
+                    <th>Status</th>
+                    <th>Assigned Tasker</th>
+                    <th>Date</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    {% for job in open_jobs %}
+    <tr>
+        <td>{{ job.name }}</td>
+        <td>{{ job.email }}</td>
+        <td>{{ job.service }}</td>
+        <td>{{ job.get_status_display }}</td>
+        <td>{{ job.assigned_tasker }}</td>
+        <td>{{ job.date }}</td>
+        <td>${{ job.price }}</td>
+        <td>
+            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#viewJobModal" 
+                    data-name="{{ job.name }}" 
+                    data-email="{{ job.email }}" 
+                    data-phone="{{ job.phone }}"
+                    data-address="{{ job.address }}"
+                    data-service="{{ job.service }}"
+                    data-status="{{ job.get_status_display }}" 
+                    data-assigned-tasker="{{ job.assigned_tasker }}" 
+                    data-date="{{ job.date }}" 
+                    data-price="{{ job.price }}"
+                    data-notes="{{ job.notes }}"
+                    data-industry="{{ job.industry }}"
+                    data-company-name="{{ job.company_name }}">
+                View
+            </button>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="8">No open jobs available.</td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+        </table>
+    </div>
+
+   <!-- Job Details Modal -->
+<div class="modal fade" id="viewJobModal" tabindex="-1" role="dialog" aria-labelledby="viewJobModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewJobModalLabel">Job Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Name</th>
+                        <td id="modal-name"></td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td id="modal-email"></td>
+                    </tr>
+                    <tr>
+                        <th>Phone</th>
+                        <td id="modal-phone"></td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td id="modal-address"></td>
+                    </tr>
+                    <tr>
+                        <th>Service</th>
+                        <td id="modal-service"></td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td id="modal-status"></td>
+                    </tr>
+                    <tr>
+                        <th>Assigned Tasker</th>
+                        <td id="modal-assigned-tasker"></td>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <td id="modal-date"></td>
+                    </tr>
+                    <tr>
+                        <th>Price</th>
+                        <td id="modal-price"></td>
+                    </tr>
+                    <tr>
+                        <th>Notes</th>
+                        <td id="modal-notes"></td>
+                    </tr>
+                    <tr>
+                        <th>Industry</th>
+                        <td id="modal-industry"></td>
+                    </tr>
+                    <tr>
+                        <th>Company Name</th>
+                        <td id="modal-company-name"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- JavaScript for Modal -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.5/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $('#viewJobModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);  // Button that triggered the modal
+    var name = button.data('name');
+    var email = button.data('email');
+    var phone = button.data('phone');
+    var address = button.data('address');
+    var service = button.data('service');
+    var status = button.data('status');
+    var assignedTasker = button.data('assigned-tasker');
+    var date = button.data('date');
+    var price = button.data('price');
+    var notes = button.data('notes');
+    var industry = button.data('industry');
+    var companyName = button.data('company-name');
+
+    // Update modal content
+    $('#modal-name').text(name);
+    $('#modal-email').text(email);
+    $('#modal-phone').text(phone);
+    $('#modal-address').text(address);
+    $('#modal-service').text(service);
+    $('#modal-status').text(status);
+    $('#modal-assigned-tasker').text(assignedTasker);
+    $('#modal-date').text(date);
+    $('#modal-price').text('$' + price);
+    $('#modal-notes').text(notes);
+    $('#modal-industry').text(industry);
+    $('#modal-company-name').text(companyName);
+});
+
+    </script>
+
+    <!-- Logout button positioned at the bottom right -->
+<div class="logout-btn-container">
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">Logout <i class="fas fa-sign-out-alt"></i></button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -8,11 +8,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <script>
-        function showPopup(message) {
-            alert(message);  // This will show the popup
-        }
-    </script>
+   
 
     <style>
         
@@ -126,6 +122,27 @@
             background-color: #e67e22;
             border-color: #e67e22;
         }
+
+        /* Positioning the logout button at the bottom right */
+        .logout-btn-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 12px 18px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
     </style>
     
 </head>
@@ -135,17 +152,18 @@
         <div class="text-center">
             <img src="/media/citytasker.png" alt="City Tasker Logo" class="img-fluid my-3" style="max-width: 150px; border-radius: 50%;">
         </div>
-        <a href="">Open Jobs</a>
+        <a href="{% url 'open_jobs' %}">Open Jobs</a>
         <a href="{% url 'completed_jobs' %}">Completed Jobs</a>
         
     </div>
     
-    {% if tasker_details %}
-    <script>
-        // Show the tasker's details in a popup
-        showPopup("{{ tasker_details }}");
-    </script>
-{% endif %}
+    <!-- Logout button positioned at the bottom right -->
+    <div class="logout-btn-container">
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Logout <i class="fas fa-sign-out-alt"></i></button>
+        </form>
+    </div>
 
 
 </body>

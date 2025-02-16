@@ -1,4 +1,3 @@
-<!-- templates/registration/login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,22 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f7fc; /* Soft background color */
+            font-family: Arial, sans-serif; /* Clean and modern font */
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-box {
+            background-color: #ffffff; /* White background for the login box */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        .login-box img {
+            width: 120px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+        }
+        .login-box h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .form-control {
+            border-radius: 25px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+        }
+        .form-control:focus {
+            border-color: #2980b9;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        .btn-primary {
+            background-color: #2980b9;
+            border-color: #2980b9;
+            padding: 12px;
+            border-radius: 25px;
+            font-size: 16px;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+        .alert-danger {
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h2 class="text-center">Login</h2>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}  <!-- This will render the login form fields -->
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
-        </form>
+
+    <div class="login-container">
+        <div class="login-box">
+            <img src="/media/citytasker.png" alt="City Tasker Logo">
+            <h2>Login</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }} <!-- This will render the login form fields -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
     </div>
+
 </body>
 </html>

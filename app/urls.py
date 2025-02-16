@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from . import views
 from .views import CustomLoginView, home, tasker
+from django.contrib.auth.views import LogoutView 
 
 # Restriction for non-admin users
 def admin_only(view_func):
@@ -33,4 +34,7 @@ urlpatterns = [
     path('partners/save/', login_required(admin_only(views.save_partner)), name='save_partner'),
     path('partners/upload/', login_required(admin_only(views.upload_partners)), name='upload_partners'),
     path('skip_hire/', login_required(admin_only(views.skip_hire)), name='skip_hire'),
+    path('accounts/logout/', LogoutView.as_view(next_page='/'), name='logout'),
+    path('open_jobs/', views.open_jobs, name='open_jobs'),
+    # path('open_jobs/view/<int:id>/', views.view_open_job, name='view_open_job'),  # View job page
 ]

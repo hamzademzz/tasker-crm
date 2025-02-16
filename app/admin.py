@@ -40,3 +40,8 @@ class CompletedJobAdmin(admin.ModelAdmin):
 class FileAdmin(admin.ModelAdmin):
     list_display = ('name', 'file')
     search_fields = ('name',)
+
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'service', 'status', 'assigned_tasker', 'date', 'price')
+    search_fields = ('name', 'service')
+    list_filter = ('status', 'assigned_tasker', 'service', 'date')

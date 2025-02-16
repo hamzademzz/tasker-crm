@@ -213,8 +213,8 @@ def completed_jobs(request):
     
     # Check if the logged-in user is "admin" or a tasker
     if request.user.username == 'admin':
-        # If the user is admin, show all jobs
-        completed_jobs = Customer.objects.all()
+        # If the user is admin, show all jobs (CompletedJob entries)
+        completed_jobs = CompletedJob.objects.all()
     else:
         try:
             # Find the Tasker where email matches the username (case-insensitive)
@@ -223,8 +223,8 @@ def completed_jobs(request):
             # Store tasker details to pass to the template
             tasker_details = f"Tasker Name: {tasker.name}, Email: {tasker.email}"
             
-            # Get jobs assigned to this Tasker
-            completed_jobs = tasker.tasks.all()
+            # Get jobs assigned to this Tasker using the assigned_tasker field in CompletedJob
+            completed_jobs = CompletedJob.objects.filter(assigned_tasker=tasker)
         except Tasker.DoesNotExist:
             # If no Tasker exists for this user, keep the completed_jobs as an empty list
             completed_jobs = []
@@ -233,29 +233,34 @@ def completed_jobs(request):
         'completed_jobs': completed_jobs,
         'tasker_details': tasker_details
     })
-    # Initialize the completed_jobs list
-    completed_jobs = []
-    
+
+def open_jobs(request):
+    # Initialize the open_jobs list
+    open_jobs = []
+    tasker_details = None  # Variable to store tasker details
+
     # Check if the logged-in user is "admin" or a tasker
     if request.user.username == 'admin':
-        # If the user is admin, show all jobs
-        completed_jobs = Customer.objects.all()
+        # If the user is admin, show all open jobs (Customer entries with statuses 'Pending', 'Site Visit', 'Quote Sent')
+        open_jobs = Customer.objects.filter(status__in=[Customer.PENDING, Customer.SITE_VISIT, Customer.QUOTE_SENT])
     else:
         try:
             # Find the Tasker where email matches the username (case-insensitive)
             tasker = Tasker.objects.get(email__iexact=request.user.username)  # case-insensitive check
-            
-            # Print the tasker to the console for debugging
-            print("Tasker found:", tasker)
-            
-            # Get jobs assigned to this Tasker
-            completed_jobs = tasker.tasks.all()
-        except Tasker.DoesNotExist:
-            # If no Tasker exists for this user, keep the completed_jobs as an empty list
-            completed_jobs = []
-    
-    return render(request, 'app/completed_jobs.html', {'completed_jobs': completed_jobs})
 
+            # Store tasker details to pass to the template
+            tasker_details = f"Tasker Name: {tasker.name}, Email: {tasker.email}"
+
+            # Get jobs assigned to this Tasker that are open (Pending, Site Visit, or Quote Sent)
+            open_jobs = Customer.objects.filter(assigned_tasker=tasker, status__in=[Customer.PENDING, Customer.SITE_VISIT, Customer.QUOTE_SENT])
+        except Tasker.DoesNotExist:
+            # If no Tasker exists for this user, keep the open_jobs as an empty list
+            open_jobs = []
+
+    return render(request, 'app/open_jobs.html', {
+        'open_jobs': open_jobs,
+        'tasker_details': tasker_details
+    })
 
 
 def lead_jobs(request):
@@ -523,3 +528,10 @@ def upload_partners(request):
 
 def skip_hire(request):
     return render(request, 'app/skip_hire.html')
+
+    
+# def open_jobs(request):
+#     # Filter customers with the specified statuses
+#     open_jobs = Customer.objects.filter(status__in=[Customer.PENDING, Customer.SITE_VISIT, Customer.QUOTE_SENT])
+
+#     return render(request, 'open_jobs.html', {'open_jobs': open_jobs})
