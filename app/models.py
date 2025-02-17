@@ -35,8 +35,8 @@ class Customer(models.Model):
     notes = models.TextField(blank=True, null=True)
     date = models.DateField(default=now, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    industry = models.CharField(max_length=255, null=True, blank=True)
-    company_name = models.CharField(max_length=255, null=True, blank=True)
+    industry = models.CharField(max_length=100) 
+    company_name = models.CharField(max_length=100) 
 
     def save(self, *args, **kwargs):
         # Check if the status is being set to 'Payment Done'
@@ -125,11 +125,18 @@ class RegularCustomer(models.Model):
 
 
 class Partner(models.Model):
-    name = models.CharField(max_length=255)
-    category = models.CharField(max_length=255)
+    industry = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.name
+        return self.industry
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=255)
+    industry = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="companies")
+
+    def __str__(self):
+        return self.name  # Returns the company name
 
 class Firm(models.Model):
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE)

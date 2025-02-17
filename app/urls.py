@@ -36,5 +36,9 @@ urlpatterns = [
     path('skip_hire/', login_required(admin_only(views.skip_hire)), name='skip_hire'),
     path('accounts/logout/', LogoutView.as_view(next_page='/'), name='logout'),
     path('open_jobs/', views.open_jobs, name='open_jobs'),
+    path('partners/save/', views.save_industry, name='save_industry'),  # <-- Ensure this exists
+    path('partners/', views.industry_list, name='partners'),
+    path("get_companies/", views.get_companies, name="get_companies"),
+
     # path('open_jobs/view/<int:id>/', views.view_open_job, name='view_open_job'),  # View job page
 ]

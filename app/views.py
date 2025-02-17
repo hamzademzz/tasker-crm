@@ -529,6 +529,37 @@ def upload_partners(request):
 def skip_hire(request):
     return render(request, 'app/skip_hire.html')
 
+
+from django.http import JsonResponse
+from .models import Company
+
+from django.http import JsonResponse
+
+def get_companies(request):
+    industry_name = request.GET.get("industry")
+    try:
+        partner = Partner.objects.get(industry=industry_name)  # Get the partner by industry name
+        companies = partner.companies.all()  # Get the related companies (customers)
+        company_list = [{"company": company.name} for company in companies]  # Change name to company
+        return JsonResponse({"companies": company_list})
+    except Partner.DoesNotExist:
+        return JsonResponse({"error": "Industry not found"})
+
+
+def save_industry(request):
+    if request.method == "POST":
+        industry_name = request.POST.get("industry")
+        if industry_name:
+            Partner.objects.create(industry=industry_name)
+            return JsonResponse({"success": True})
+        return JsonResponse({"success": False, "error": "Invalid data"})
+    return JsonResponse({"success": False, "error": "Invalid request"})
+
+def industry_list(request):
+    industries = Partner.objects.all()  # Fetches all Partner objects
+    return render(request, "app/partners.html", {"industries": industries})
+
+
     
 # def open_jobs(request):
 #     # Filter customers with the specified statuses
