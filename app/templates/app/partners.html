@@ -24,18 +24,16 @@
         .btn-primary:hover { background-color: #2980b9; }
         .hidden { display: none; }
         .industry-row:hover { 
-    background-color: #ecf0f1;
-    cursor: pointer;
-}
-.company-card { 
-    border: 1px solid #ddd; 
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
-    background-color: #fff;
-}
-
-
+            background-color: #ecf0f1;
+            cursor: pointer;
+        }
+        .company-card { 
+            border: 1px solid #ddd; 
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -64,19 +62,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tbody>
-                    {% for partner in partners %}
-                    <tr class="industry-row" data-industry-name="{{ partner }}">
-                        <td>{{ partner }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="1">No industries found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+                {% for partner in partners %}
+                <tr class="industry-row" data-industry-name="{{ partner }}">
+                    <td>{{ partner }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="1">No industries found.</td>
+                </tr>
+                {% endfor %}
             </tbody>
-            
         </table>
 
         <!-- Company List (Hidden initially) -->
@@ -89,6 +84,21 @@
                     </tr>
                 </thead>
                 <tbody id="companyTableBody">
+                    <!-- Populated via AJAX -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Customers (Hidden initially) -->
+        <div id="customerList" class="hidden">
+            <h3>Customers in <span id="companyName"></span></h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Customer Name</th>
+                    </tr>
+                </thead>
+                <tbody id="customerTableBody">
                     <!-- Populated via AJAX -->
                 </tbody>
             </table>
@@ -128,25 +138,54 @@
     
             $("#industryName").text(industryName);  // Set industry name in the modal title
             $("#companyTableBody").empty();  // Clear previous companies if any
-    
+            $("#customerTableBody").empty();  // Clear previous customers if any
+            $("#companyList").removeClass("hidden");  // Show the company list
+            $("#customerList").addClass("hidden");  // Hide the customer list initially
+
+            // Request companies for the selected industry
             $.ajax({
-                url: "/get_companies/?industry=" + industryName,  // Request companies for the selected industry
+                url: "/get_companies/?industry=" + industryName,  
                 type: "GET",
                 success: function (data) {
                     if (data.companies) {
-                        // Add companies to the table
                         data.companies.forEach(function (company) {
-                            $("#companyTableBody").append("<tr><td>" + company.company + "</td></tr>");  // Update to use 'company'
+                            // Add clickable companies
+                            $("#companyTableBody").append("<tr class='company-row' data-company-id='" + company.id + "'><td>" + company.company + "</td></tr>");
                         });
-                        $("#companyList").removeClass("hidden");  // Show company list
                     } else {
                         $("#companyTableBody").append("<tr><td colspan='1'>No companies found</td></tr>");
-                        $("#companyList").removeClass("hidden");
                     }
                 },
                 error: function () {
                     $("#companyTableBody").append("<tr><td colspan='1'>Error loading companies</td></tr>");
-                    $("#companyList").removeClass("hidden");
+                }
+            });
+        });
+
+        // When a company is clicked, show the customers linked to it
+        $(document).on("click", ".company-row", function () {
+            var companyId = $(this).data("company-id"); // Get company ID
+            
+            $("#companyName").text($(this).text());  // Set company name in the customer list
+            $("#customerTableBody").empty();  // Clear previous customers if any
+            $("#customerList").removeClass("hidden");  // Show the customer list
+
+            // Request customers for the selected company
+            $.ajax({
+                url: "/get_customers_by_company/",  // Use the correct URL for this view
+                type: "GET",
+                data: { 'company_id': companyId },  // Send company ID to the view
+                success: function (data) {
+                    if (data.customers) {
+                        data.customers.forEach(function (customer) {
+                            $("#customerTableBody").append("<tr><td>" + customer.company_name + "</td></tr>");
+                        });
+                    } else {
+                        $("#customerTableBody").append("<tr><td colspan='1'>No customers found</td></tr>");
+                    }
+                },
+                error: function () {
+                    $("#customerTableBody").append("<tr><td colspan='1'>Error loading customers</td></tr>");
                 }
             });
         });

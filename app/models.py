@@ -2,6 +2,21 @@ from django.db import models
 from django.utils.timezone import now
 
 
+
+class Partner(models.Model):
+    industry = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.industry
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=255)
+    industry = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="companies")
+
+    def __str__(self):
+        return self.name  # Returns the company name
+
 class File(models.Model):
     name = models.CharField(max_length=255)
     file = models.FileField(upload_to='customer_files/')
@@ -35,8 +50,8 @@ class Customer(models.Model):
     notes = models.TextField(blank=True, null=True)
     date = models.DateField(default=now, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    industry = models.CharField(max_length=100) 
-    company_name = models.CharField(max_length=100) 
+    industry = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="customers")  # ForeignKey
+    company_name = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="customers")  # ForeignKey
 
     def save(self, *args, **kwargs):
         # Check if the status is being set to 'Payment Done'
@@ -122,21 +137,6 @@ class RegularCustomer(models.Model):
     def __str__(self):
         return f"{self.customer.name} - {self.service_type}"
 
-
-
-class Partner(models.Model):
-    industry = models.CharField(max_length=255, unique=True)
-
-    def __str__(self):
-        return self.industry
-
-
-class Company(models.Model):
-    name = models.CharField(max_length=255)
-    industry = models.ForeignKey(Partner, on_delete=models.CASCADE, related_name="companies")
-
-    def __str__(self):
-        return self.name  # Returns the company name
 
 class Firm(models.Model):
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE)

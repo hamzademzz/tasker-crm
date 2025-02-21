@@ -52,8 +52,8 @@ def customer_create_view(request):
         notes = request.POST.get('notes') 
         date = request.POST.get('date') 
         price = request.POST.get('price') 
-        customer.industry = request.POST.get('industry')  # New field
-        customer.company_name = request.POST.get('company_name')  # New field
+        industry = request.POST.get('industry')  # New field
+        company_name = request.POST.get('company_name')  # New field
         assigned_tasker_id = request.POST.get('assigned_tasker')
     
 
@@ -71,6 +71,8 @@ def customer_create_view(request):
             assigned_tasker=assigned_tasker,
             date=date,
             price=price,
+            industry=industry,
+            company_name=company_name
         )
 
         # Handle file attachments
@@ -566,3 +568,18 @@ def industry_list(request):
 #     open_jobs = Customer.objects.filter(status__in=[Customer.PENDING, Customer.SITE_VISIT, Customer.QUOTE_SENT])
 
 #     return render(request, 'open_jobs.html', {'open_jobs': open_jobs})
+
+
+def get_customers_by_industry(request):
+    industry_name = request.GET.get('industry', None)
+
+    if industry_name:
+        # Get the customers for the given industry (assumes the 'industry_name' is a field on Customer)
+        customers = Customer.objects.filter(industry_name=industry_name)  # Make sure you are using the correct field name
+        
+        # Create the customer data to return (assuming 'company_name' and 'name' are fields in Customer)
+        customer_data = [{"company_name": customer.company_name, "name": customer.name} for customer in customers]
+
+        return JsonResponse({'customers': customer_data})
+    
+    return JsonResponse({'error': 'Industry not provided'}, status=400)
