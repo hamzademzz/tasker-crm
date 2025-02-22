@@ -213,7 +213,7 @@ $(document).on("click", ".company-row", function () {
         },
         error: function (xhr, status, error) {
             console.log("Error loading customers:", error);  // Log the error to help debug
-            $("#customerTableBody").append("<tr><td colspan='4'>Error loading customers</td></tr>");
+            $("#customerTableBody").append("<tr><td colspan='4'>No Customers Found</td></tr>");
         }
     });
 });

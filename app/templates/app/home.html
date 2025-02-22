@@ -276,21 +276,23 @@
                         <label for="industry">Industry</label>
                         <select name="industry" id="industry" class="form-control">
                             <option value="" disabled selected>Select Industry</option>
-                            {% for industry in industries %}
-                            <option value="{{ industry }}">{{ industry }}</option>
+                            {% for partner in partners %}
+                                <option value="{{ partner.industry }}">{{ partner.industry }}</option>
                             {% endfor %}
                         </select>
                     </div>
+                    
                     
                     <div class="form-group">
                         <label for="company_name">Company Name</label>
                         <select name="company_name" id="company_name" class="form-control">
                             <option value="" disabled selected>Select Company Name</option>
                             {% for company in companies %}
-                            <option value="{{ company }}">{{ company }}</option>
+                                <option value="{{ company.id }}">{{ company.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
+                    
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
             </div>
@@ -367,21 +369,22 @@
                         <input type="file" class="form-control" id="attachments" name="attachments" multiple>
                     </div>
                     <div class="form-group">
-                        <label for="industry_edit">Industry</label>
-                        <select name="industry" id="industry_edit" class="form-control">
+                        <label for="industry">Industry</label>
+                        <select name="industry" id="industry" class="form-control">
                             <option value="" disabled selected>Select Industry</option>
-                            {% for industry in industries %}
-                            <option value="{{ industry }}">{{ industry }}</option>
+                            {% for partner in partners %}
+                                <option value="{{ partner.industry }}">{{ partner.industry }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     
+                    
                     <div class="form-group">
-                        <label for="company_name_edit">Company Name</label>
-                        <select name="company_name" id="company_name_edit" class="form-control">
+                        <label for="company_name">Company Name</label>
+                        <select name="company_name" id="company_name" class="form-control">
                             <option value="" disabled selected>Select Company Name</option>
                             {% for company in companies %}
-                            <option value="{{ company }}">{{ company }}</option>
+                                <option value="{{ company.id }}">{{ company.name }}</option>
                             {% endfor %}
                         </select>
                     </div>

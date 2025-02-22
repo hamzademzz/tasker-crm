@@ -33,11 +33,16 @@ def home(request):
     taskers = Tasker.objects.all()  # Include taskers
     status_choices = Customer.STATUS_CHOICES  # Include status choices
     regular_customers = RegularCustomer.objects.select_related('customer').all()  # Include regular customers
+
+    partners = Partner.objects.all()  # Retrieve all partners
+    companies = Company.objects.all()  # Retrieve all companies
     return render(request, 'app/home.html', {
         'customers': customers,
         'taskers': taskers,
         'status_choices': status_choices,
         'regular_customers': regular_customers,  # Pass regular customers
+        'partners': partners,
+        'companies': companies,
     })
 
 def customer_create_view(request):
@@ -82,6 +87,10 @@ def customer_create_view(request):
                 customer.attachments.add(file_instance)
 
         return redirect('home')
+    
+
+    
+
 
 
 def customer_detail_view(request, customer_id):
