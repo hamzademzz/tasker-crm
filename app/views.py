@@ -571,15 +571,36 @@ def industry_list(request):
 
 
 def get_customers_by_industry(request):
-    industry_name = request.GET.get('industry', None)
+    company_name = request.GET.get('company_name')
+    print("Company Name received:", company_name)  # Debug: log the received company name
 
-    if industry_name:
-        # Get the customers for the given industry (assumes the 'industry_name' is a field on Customer)
-        customers = Customer.objects.filter(industry_name=industry_name)  # Make sure you are using the correct field name
-        
-        # Create the customer data to return (assuming 'company_name' and 'name' are fields in Customer)
-        customer_data = [{"company_name": customer.company_name, "name": customer.name} for customer in customers]
+    if company_name:
+        try:
+            # Get the company by name (assuming company name is unique)
+            company = get_object_or_404(Company, name=company_name)
+            print("Company found:", company.name)  # Debug: log the found company name
 
-        return JsonResponse({'customers': customer_data})
-    
-    return JsonResponse({'error': 'Industry not provided'}, status=400)
+            # Fetch customers for the given company name
+            customers = Customer.objects.filter(company_name=company)
+            print("Customers found:", customers.count())  # Debug: log the number of customers found
+
+            if customers.exists():
+                customer_data = [
+                    {
+                        'id': customer.id,
+                        'name': customer.name,
+                        'email': customer.email,
+                        'phone': customer.phone,
+                        'address':customer.address
+                        # Add more customer fields as needed
+                    }
+                    for customer in customers
+                ]
+                return JsonResponse({'customers': customer_data})
+            else:
+                return JsonResponse({'message': 'No customers found for this company.'}, status=404)
+        except Exception as e:
+            print(f"Error: {e}")  # Debug: log any error during company lookup
+            return JsonResponse({'error': f'Error: {e}'}, status=500)
+    else:
+        return JsonResponse({'error': 'No company_name provided'}, status=400)

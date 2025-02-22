@@ -132,64 +132,96 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
+
     <script>
-        $(".industry-row").click(function () {
-            var industryName = $(this).data("industry-name"); // Get industry name
+    $(".industry-row").click(function () {
+    var industryName = $(this).data("industry-name"); // Get industry name
+    console.log("Industry clicked:", industryName);  // Debug: log the industry name
     
-            $("#industryName").text(industryName);  // Set industry name in the modal title
-            $("#companyTableBody").empty();  // Clear previous companies if any
-            $("#customerTableBody").empty();  // Clear previous customers if any
-            $("#companyList").removeClass("hidden");  // Show the company list
-            $("#customerList").addClass("hidden");  // Hide the customer list initially
+    $("#industryName").text(industryName);  // Set industry name in the modal title
+    $("#companyTableBody").empty();  // Clear previous companies if any
+    $("#customerTableBody").empty();  // Clear previous customers if any
+    $("#companyList").removeClass("hidden");  // Show the company list
+    $("#customerList").addClass("hidden");  // Hide the customer list initially
 
-            // Request companies for the selected industry
-            $.ajax({
-                url: "/get_companies/?industry=" + industryName,  
-                type: "GET",
-                success: function (data) {
-                    if (data.companies) {
-                        data.companies.forEach(function (company) {
-                            // Add clickable companies
-                            $("#companyTableBody").append("<tr class='company-row' data-company-id='" + company.id + "'><td>" + company.company + "</td></tr>");
-                        });
-                    } else {
-                        $("#companyTableBody").append("<tr><td colspan='1'>No companies found</td></tr>");
-                    }
-                },
-                error: function () {
-                    $("#companyTableBody").append("<tr><td colspan='1'>Error loading companies</td></tr>");
-                }
-            });
-        });
+    // Request companies for the selected industry
+    $.ajax({
+        url: "/get_companies/?industry=" + industryName,  
+        type: "GET",
+        success: function (data) {
+            console.log("Companies data received:", data);  // Log the entire data object for debugging
 
-        // When a company is clicked, show the customers linked to it
-        $(document).on("click", ".company-row", function () {
-            var companyId = $(this).data("company-id"); // Get company ID
-            
-            $("#companyName").text($(this).text());  // Set company name in the customer list
-            $("#customerTableBody").empty();  // Clear previous customers if any
-            $("#customerList").removeClass("hidden");  // Show the customer list
+            if (data.companies && data.companies.length > 0) {
+                data.companies.forEach(function (company) {
+                    console.log("Company Name inside loop: ", company.company);  // Debug: log company name
+                    
+                    // Append the row with the correct data-company-name
+                    $("#companyTableBody").append(
+                        "<tr class='company-row' data-company-name='" + company.company + "'><td>" + company.company + "</td></tr>"
+                    );
+                });
+            } else {
+                $("#companyTableBody").append("<tr><td colspan='1'>No companies found</td></tr>");
+            }
+        },
+        error: function () {
+            $("#companyTableBody").append("<tr><td colspan='1'>Error loading companies</td></tr>");
+        }
+    });
+});
 
-            // Request customers for the selected company
-            $.ajax({
-                url: "/get_customers_by_company/",  // Use the correct URL for this view
-                type: "GET",
-                data: { 'company_id': companyId },  // Send company ID to the view
-                success: function (data) {
-                    if (data.customers) {
-                        data.customers.forEach(function (customer) {
-                            $("#customerTableBody").append("<tr><td>" + customer.company_name + "</td></tr>");
-                        });
-                    } else {
-                        $("#customerTableBody").append("<tr><td colspan='1'>No customers found</td></tr>");
-                    }
-                },
-                error: function () {
-                    $("#customerTableBody").append("<tr><td colspan='1'>Error loading customers</td></tr>");
-                }
-            });
-        });
+$(document).on("click", ".company-row", function () {
+    // Debug: Check if the click event is triggered
+    console.log("Company row clicked:", $(this));
+    
+    // Get the company name from the data-company-name attribute
+    var companyName = $(this).data("company-name"); 
+
+    console.log("Company Name on click: ", companyName);  // Debug: log company name from data attribute
+
+    // Set the company name in the customer list title
+    $("#companyName").text(companyName);
+
+    // Clear any previous customers listed in the table
+    $("#customerTableBody").empty();
+    
+    // Show the customer list
+    $("#customerList").removeClass("hidden");
+
+    // Request customers for the selected company by name
+    $.ajax({
+        url: "/get_customers_by_industry/",  // Ensure this URL is correct
+        type: "GET",
+        data: { 'company_name': companyName },  // Send company name to the view
+        success: function (data) {
+            console.log("Customers data:", data);  // Log the response to check if it contains 'customers'
+            if (data.customers) {
+                data.customers.forEach(function (customer) {
+                    // Append all customer details to the customer table
+                    $("#customerTableBody").append(
+                        "<tr>" +
+                            "<td>" + customer.name + "</td>" +  // Customer Name
+                            "<td>" + customer.email + "</td>" +  // Customer Email
+                            "<td>" + customer.phone + "</td>" +  // Customer Phone (add more fields if needed)
+                            "<td>" + customer.address + "</td>" +  // Customer Address (add more fields if needed)
+                        "</tr>"
+                    );
+                });
+            } else {
+                $("#customerTableBody").append("<tr><td colspan='4'>No customers found</td></tr>");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log("Error loading customers:", error);  // Log the error to help debug
+            $("#customerTableBody").append("<tr><td colspan='4'>Error loading customers</td></tr>");
+        }
+    });
+});
+
+
+
+
+
     </script>
-
 </body>
 </html>
