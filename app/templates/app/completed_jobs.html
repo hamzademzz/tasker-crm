@@ -194,6 +194,23 @@
                 <td>{{ job.service }}</td>
                 <td>{{ job.completed_date }}</td>
                 <td>{{ job.price }}</td>
+                <td>
+                    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#customerDetailModal"
+                            data-name="{{ job.customer.name }}"
+                            data-email="{{ job.customer.email }}"
+                            data-phone="{{ job.customer.phone }}"
+                            data-address="{{ job.customer.address }}"
+                            data-service="{{ job.service }}"
+                            data-status="{{ job.status }}"
+                            data-notes="{{ job.notes }}"
+                            data-date="{{ job.completed_date }}"
+                            data-price="{{ job.price }}"
+                            data-tasker="{{ job.assigned_tasker.name|default:'No Tasker Assigned' }}"
+                            data-industry="{{ job.customer.industry }}"
+                            data-company="{{ job.customer.company_name }}"
+                            data-attachments="{% for file in job.attachments.all %}{{ file.file.url }}{% if not forloop.last %}, {% endif %}{% empty %}No attachments{% endfor %}">
+                            View Details
+                    </button>
             </tr>
             {% endfor %}
         </tbody>
@@ -239,6 +256,37 @@
 
 </div>
 
+<!-- Customer Details Modal -->
+<div class="modal fade" id="customerDetailModal" tabindex="-1" aria-labelledby="customerDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-small">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerDetailModalLabel">Customer Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Name:</strong> <span id="customerName"></span></p>
+                <p><strong>Email:</strong> <span id="customerEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="customerPhone"></span></p>
+                <p><strong>Address:</strong> <span id="customerAddress"></span></p>
+                <p><strong>Service:</strong> <span id="customerService"></span></p>
+                <p><strong>Status:</strong> <span id="customerStatus"></span></p>
+                <p><strong>Notes:</strong> <span id="customerNotes"></span></p>
+                <p><strong>Date:</strong> <span id="customerDate"></span></p>
+                <p><strong>Price:</strong> <span id="customerPrice"></span></p>
+                <p><strong>Tasker:</strong> <span id="customerTasker"></span></p>
+                <p><strong>Industry:</strong> <span id="customerIndustry"></span></p>
+                <p><strong>Company:</strong> <span id="customerCompany"></span></p>
+                <p><strong>Attachments:</strong> <span id="customerAttachments"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- Include necessary Bootstrap and jQuery scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -263,6 +311,23 @@
                 row.style.display = 'none'; // Hide row
             }
         });
+    });
+
+    $('#customerDetailModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        $('#customerName').text(button.data('name'));
+        $('#customerEmail').text(button.data('email'));
+        $('#customerPhone').text(button.data('phone'));
+        $('#customerAddress').text(button.data('address'));
+        $('#customerService').text(button.data('service'));
+        $('#customerStatus').text(button.data('status'));
+        $('#customerNotes').text(button.data('notes'));
+        $('#customerDate').text(button.data('date'));
+        $('#customerPrice').text(button.data('price'));
+        $('#customerTasker').text(button.data('tasker'));
+        $('#customerIndustry').text(button.data('industry'));
+        $('#customerCompany').text(button.data('company'));
+        $('#customerAttachments').text(button.data('attachments') || "No attachments");
     });
 </script>
 
