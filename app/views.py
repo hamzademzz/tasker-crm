@@ -110,9 +110,16 @@ def customer_detail_view(request, customer_id):
         customer.notes = request.POST.get('notes')
         customer.date = request.POST.get('date')
         customer.price = request.POST.get('price')
-        customer.industry = request.POST.get('industry')  # New field
-        customer.company_name = request.POST.get('company_name')  # New field
+        # Retrieve the Partner instance based on the selected industry
+        industry = Partner.objects.get(industry=request.POST.get('industry'))
 
+        # Assign the Partner instance to the customer
+        customer.industry = industry
+       # Retrieve the Company instance based on the selected company ID
+        company_name = Company.objects.get(id=request.POST.get('company_name'))
+
+        # Assign the Company instance to the customer
+        customer.company_name = company_name
         # Assign tasker if provided
         assigned_tasker_id = request.POST.get('assigned_tasker')
         if assigned_tasker_id:
