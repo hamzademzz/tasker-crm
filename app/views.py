@@ -54,14 +54,17 @@ def customer_create_view(request):
         address = request.POST.get('address')
         service = request.POST.get('service')
         status = request.POST.get('status')
-        notes = request.POST.get('notes') 
-        date = request.POST.get('date') 
-        price = request.POST.get('price') 
-        industry = request.POST.get('industry')  # New field
-        company_name = request.POST.get('company_name')  # New field
+        notes = request.POST.get('notes')
+        date = request.POST.get('date')
+        price = request.POST.get('price')
         assigned_tasker_id = request.POST.get('assigned_tasker')
-    
 
+        # Retrieve the Partner instance based on the selected industry
+        industry = Partner.objects.get(industry=request.POST.get('industry'))
+
+        # Retrieve the Company instance based on the selected company name
+        company_name = request.POST.get('company_name')
+        company = Company.objects.get(name=company_name)  # Get Company by name
 
         # Create a new Customer instance
         assigned_tasker = Tasker.objects.get(id=assigned_tasker_id) if assigned_tasker_id else None
@@ -72,13 +75,18 @@ def customer_create_view(request):
             address=address,
             service=service,
             status=status,
-            notes=notes,  # Save notes
+            notes=notes,
             assigned_tasker=assigned_tasker,
             date=date,
-            price=price,
-            industry=industry,
-            company_name=company_name
+            price=price
         )
+
+        # Assign the Partner instance and Company instance to the customer
+        customer.industry = industry
+        customer.company_name = company
+
+        # Save the customer after assigning the foreign key relationships
+        customer.save()
 
         # Handle file attachments
         if request.FILES.getlist('attachments'):
@@ -87,6 +95,8 @@ def customer_create_view(request):
                 customer.attachments.add(file_instance)
 
         return redirect('home')
+
+
     
 
     
@@ -110,23 +120,39 @@ def customer_detail_view(request, customer_id):
         customer.notes = request.POST.get('notes')
         customer.date = request.POST.get('date')
         customer.price = request.POST.get('price')
+
         # Retrieve the Partner instance based on the selected industry
-        industry = Partner.objects.get(industry=request.POST.get('industry'))
+        industry_name = request.POST.get('industry')
+        if industry_name:
+            try:
+                industry = Partner.objects.get(industry=industry_name)
+                customer.industry = industry
+            except Partner.DoesNotExist:
+                # You may want to handle this error (e.g., notify the user)
+                pass
 
-        # Assign the Partner instance to the customer
-        customer.industry = industry
-       # Retrieve the Company instance based on the selected company ID
-        company_name = Company.objects.get(id=request.POST.get('company_name'))
+        # Retrieve the Company instance based on the selected company name
+        company_name = request.POST.get('company_name')
+        if company_name:
+            try:
+                company = Company.objects.get(name=company_name)
+                customer.company_name = company
+            except Company.DoesNotExist:
+                # You may want to handle this error (e.g., notify the user)
+                pass
 
-        # Assign the Company instance to the customer
-        customer.company_name = company_name
         # Assign tasker if provided
         assigned_tasker_id = request.POST.get('assigned_tasker')
         if assigned_tasker_id:
-            customer.assigned_tasker = Tasker.objects.get(id=assigned_tasker_id)
+            try:
+                customer.assigned_tasker = Tasker.objects.get(id=assigned_tasker_id)
+            except Tasker.DoesNotExist:
+                # You may want to handle this error (e.g., notify the user)
+                customer.assigned_tasker = None
         else:
             customer.assigned_tasker = None
 
+        # Save the updated customer instance
         customer.save()
 
         # Handle file attachments
@@ -136,6 +162,7 @@ def customer_detail_view(request, customer_id):
                 customer.attachments.add(file_instance)
 
         return redirect('home')
+
 
 
 def regular_customer_detail(request):
