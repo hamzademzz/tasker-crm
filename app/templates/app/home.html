@@ -171,7 +171,8 @@
         </thead>
         <tbody>
             {% for customer in customers %}
-                {% if customer.status != 'Payment Done' %}
+                {% if customer.status != "Payment Done" and customer.status != "Lead" %}
+
                     <tr>
                         <td class="customer-name">{{ customer.name }}</td>
                         <td class="customer-email">{{ customer.email }}</td>
