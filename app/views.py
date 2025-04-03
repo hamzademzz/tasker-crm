@@ -59,15 +59,28 @@ def customer_create_view(request):
         price = request.POST.get('price')
         assigned_tasker_id = request.POST.get('assigned_tasker')
 
-        # Retrieve the Partner instance based on the selected industry
-        industry = Partner.objects.get(industry=request.POST.get('industry'))
+        # Retrieve the Partner instance if an industry is provided
+        industry = None
+        industry_name = request.POST.get('industry')
+        if industry_name:
+            try:
+                industry = Partner.objects.get(industry=industry_name)
+            except Partner.DoesNotExist:
+                pass  # Skip if the industry does not exist
 
-        # Retrieve the Company instance based on the selected company name
+        # Retrieve the Company instance if a company name is provided
+        company = None
         company_name = request.POST.get('company_name')
-        company = Company.objects.get(name=company_name)  # Get Company by name
+        if company_name:
+            try:
+                company = Company.objects.get(name=company_name)
+            except Company.DoesNotExist:
+                pass  # Skip if the company does not exist
+
+        # Retrieve assigned tasker if provided
+        assigned_tasker = Tasker.objects.filter(id=assigned_tasker_id).first() if assigned_tasker_id else None
 
         # Create a new Customer instance
-        assigned_tasker = Tasker.objects.get(id=assigned_tasker_id) if assigned_tasker_id else None
         customer = Customer.objects.create(
             name=name,
             email=email,
@@ -81,18 +94,19 @@ def customer_create_view(request):
             price=price
         )
 
-        # Assign the Partner instance and Company instance to the customer
-        customer.industry = industry
-        customer.company_name = company
+        # Assign the Partner instance and Company instance to the customer if they exist
+        if industry:
+            customer.industry = industry
+        if company:
+            customer.company_name = company
 
         # Save the customer after assigning the foreign key relationships
         customer.save()
 
         # Handle file attachments
-        if request.FILES.getlist('attachments'):
-            for file in request.FILES.getlist('attachments'):
-                file_instance = File.objects.create(name=file.name, file=file)
-                customer.attachments.add(file_instance)
+        for file in request.FILES.getlist('attachments'):
+            file_instance = File.objects.create(name=file.name, file=file)
+            customer.attachments.add(file_instance)
 
         return redirect('home')
 
@@ -324,8 +338,8 @@ def export_to_excel(request):
             "Status": customer.status,
             "Date": customer.date,
             "Price": customer.price,
-            "Industry": customer.industry,
-            "Company Name": customer.company_name,
+            "Industry": getattr(customer.industry, 'industry', 'N/A'),  # Avoids error
+            "Company Name": getattr(customer.company_name, 'name', 'N/A'),  # Avoids error
         }
         for customer in customers
     ]
